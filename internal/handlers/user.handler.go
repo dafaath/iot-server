@@ -28,6 +28,12 @@ func NewUserHandler(db *pgxpool.Pool, userRepository *repositories.UserRepositor
 	}, nil
 }
 
+func (u *UserHandler) RegisterPage(c *fiber.Ctx) (err error) {
+	return c.Render("register", fiber.Map{
+		"title": "Register",
+	}, "layouts/main")
+}
+
 func (u *UserHandler) Register(c *fiber.Ctx) (err error) {
 	ctx := context.Background()
 	bodyPayload := entities.UserCreate{}
@@ -87,6 +93,12 @@ func (u *UserHandler) Register(c *fiber.Ctx) (err error) {
 	}
 
 	return c.Status(fiber.StatusCreated).SendString(response)
+}
+
+func (u *UserHandler) LoginPage(c *fiber.Ctx) (err error) {
+	return c.Render("login", fiber.Map{
+		"title": "Login",
+	}, "layouts/main")
 }
 
 func (u *UserHandler) Login(c *fiber.Ctx) (err error) {
@@ -154,6 +166,12 @@ func (u *UserHandler) Activation(c *fiber.Ctx) (err error) {
 	}
 
 	return c.Status(fiber.StatusOK).SendString(fmt.Sprintf("Account for username: %s has been activated", user.Username))
+}
+
+func (u *UserHandler) ForgotPasswordPage(c *fiber.Ctx) (err error) {
+	return c.Render("reset_password", fiber.Map{
+		"title": "Forgot Password",
+	}, "layouts/main")
 }
 
 func (u *UserHandler) ForgotPassword(c *fiber.Ctx) (err error) {

@@ -9,7 +9,7 @@
     "password": "",
     "host": "localhost",
     "port": 5432,
-    "name": "iot-server"
+    "name": "iot-server-version-2"
   },
   "jwt": {
     "secretKey": ""

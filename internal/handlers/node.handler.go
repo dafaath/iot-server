@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -181,6 +182,9 @@ func (h *NodeHandler) GetAll(c *fiber.Ctx) (err error) {
 	accept := c.Accepts("application/json", "text/html")
 	switch accept {
 	case "text/html":
+		sort.Slice(nodesWithChannel, func(i, j int) bool {
+			return nodesWithChannel[i].Node.IdNode > nodesWithChannel[j].Node.IdNode
+		})
 		return c.Render("node", fiber.Map{
 			"nodes": nodesWithChannel,
 		}, "layouts/main")

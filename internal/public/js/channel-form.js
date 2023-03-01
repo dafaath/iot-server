@@ -2,12 +2,11 @@ handleFormSubmit({
   url: "/channel/",
   handleResponse: (res) => {
     setTimeout(() => {
-      window.location.href = "/sensor";
+      window.location.href = "/node";
     }, 1000);
   },
   alterData: (data) => {
-    data.value = parseFloat(data.value);
-    data.id_sensor = parseInt(data.id_sensor);
+    data.id_node = parseInt(data.id_node);
     return data;
   },
 });

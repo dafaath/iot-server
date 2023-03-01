@@ -27,8 +27,8 @@ func NewChannelHandler(db *pgxpool.Pool, channelRepository *repositories.Channel
 }
 
 func (h *ChannelHandler) CreateForm(c *fiber.Ctx) (err error) {
-	idSensor := c.QueryInt("id_sensor", 0)
-	return c.Render("channel_form", fiber.Map{"title": "Create Channel", "idSensor": idSensor}, "layouts/main")
+	idNode := c.QueryInt("id_node", 0)
+	return c.Render("channel_form", fiber.Map{"title": "Create Channel", "idNode": idNode}, "layouts/main")
 }
 
 func (h *ChannelHandler) Create(c *fiber.Ctx) (err error) {

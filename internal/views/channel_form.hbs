@@ -9,7 +9,7 @@
           <div class="card" style="border-radius: 15px;">
             <div class="card-body p-5">
               <div class="d-flex justify-content-start">
-                <a class="previous text-start" href="/sensor/">
+                <a class="previous text-start" href="/node/">
                   <i class="fas fa-arrow-left me-2"></i>
                   Back
                 </a>
@@ -18,8 +18,7 @@
               <form id="submit-form">
                 <div class="form-outline mb-4">
                   <input
-                    type="number"
-                    step="0.000000000000001"
+                    type="text"
                     id="value"
                     name="value"
                     class="form-control form-control-lg"
@@ -30,12 +29,12 @@
                 <div class="form-outline mb-4">
                   <input
                     type="number"
-                    id="id_sensor"
-                    name="id_sensor"
+                    id="id_node"
+                    name="id_node"
                     class="form-control form-control-lg"
-                    value="{{idSensor}}"
+                    value="{{idNode}}"
                   />
-                  <label class="form-label" for="id_sensor">Id Sensor</label>
+                  <label class="form-label" for="id_node">Id Node</label>
                 </div>
 
                 <div class="d-flex justify-content-center">

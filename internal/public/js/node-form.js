@@ -8,6 +8,7 @@ if (isEdit) {
     method: "PUT",
   };
 }
+console.log("test");
 handleFormSubmit({
   url: "/node/",
   ...editOptions,
@@ -17,7 +18,7 @@ handleFormSubmit({
     }, 1000);
   },
   alterData: (data) => {
-    data.id_hardware = parseInt(data.id_hardware);
+    data.id_hardware_node = parseInt(data.id_hardware_node);
     return data;
   },
 });

@@ -48,10 +48,10 @@ func (r *Router) CreateUserRoute(handler *handlers.UserHandler) {
 
 func (r *Router) CreateHardwareRoute(handler *handlers.HardwareHandler) {
 	hardwareRouter := r.app.Group("/hardware")
-	hardwareRouter.Get("/create", r.authMiddleware.ValidateUser, handler.CreateForm)
-	hardwareRouter.Post("/", r.authMiddleware.ValidateUser, handler.Create)
+	hardwareRouter.Get("/create", r.authMiddleware.ValidateAdmin, handler.CreateForm)
+	hardwareRouter.Post("/", r.authMiddleware.ValidateAdmin, handler.Create)
 	hardwareRouter.Get("/", r.authMiddleware.ValidateUser, handler.GetAll)
-	hardwareRouter.Get("/:id/edit", r.authMiddleware.ValidateUser, handler.UpdateForm)
+	hardwareRouter.Get("/:id/edit", r.authMiddleware.ValidateAdmin, handler.UpdateForm)
 	hardwareRouter.Get("/:id", r.authMiddleware.ValidateUser, handler.GetById)
 	hardwareRouter.Put("/:id", r.authMiddleware.ValidateAdmin, handler.Update)
 	hardwareRouter.Delete("/:id", r.authMiddleware.ValidateAdmin, handler.Delete)
