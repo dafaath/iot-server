@@ -1,0 +1,57 @@
+<section
+  class="vh-100 bg-image"
+  style="background-image: url('https://mdbcdn.b-cdn.net/img/Photos/new-templates/search-box/img4.webp');"
+>
+  <div class="mask d-flex align-items-center h-100 gradient-custom-3">
+    <div class="container h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+          <div class="card" style="border-radius: 15px;">
+            <div class="card-body p-5">
+              <div class="d-flex justify-content-start">
+                <a class="previous text-start" href="/sensor/">
+                  <i class="fas fa-arrow-left me-2"></i>
+                  Back
+                </a>
+              </div>
+              <h2 class="text-uppercase text-center mb-5">Create Channel</h2>
+              <form id="submit-form">
+                <div class="form-outline mb-4">
+                  <input
+                    type="number"
+                    step="0.000000000000001"
+                    id="value"
+                    name="value"
+                    class="form-control form-control-lg"
+                  />
+                  <label class="form-label" for="value">Value</label>
+                </div>
+
+                <div class="form-outline mb-4">
+                  <input
+                    type="number"
+                    id="id_sensor"
+                    name="id_sensor"
+                    class="form-control form-control-lg"
+                    value="{{idSensor}}"
+                  />
+                  <label class="form-label" for="id_sensor">Id Sensor</label>
+                </div>
+
+                <div class="d-flex justify-content-center">
+                  <button
+                    type="submit"
+                    class="btn btn-primary btn-block btn-lg"
+                  >
+                    Create
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script src="/static/js/channel-form.js"></script>

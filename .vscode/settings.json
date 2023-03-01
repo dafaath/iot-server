@@ -1,0 +1,5 @@
+{
+    "js/ts.implicitProjectConfig.strictNullChecks": true,
+    "js/ts.implicitProjectConfig.strictFunctionTypes": true,
+    "javascript.validate.enable": true
+}

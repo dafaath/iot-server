@@ -1,0 +1,31 @@
+{
+  "server": {
+    "host": "localhost",
+    "port": 3000
+  },
+  "database": {
+    "username": "postgres",
+    "password": "",
+    "host": "localhost",
+    "port": 5432,
+    "name": "iot-server"
+  },
+  "jwt": {
+    "secretKey": ""
+  },
+  "mail": {
+    "smtpHost": "smtp.gmail.com",
+    "smtpPort": 587,
+    "senderName": "Server IoT IPB<iot.server.ipb@gmail.com>",
+    "authenticationMail": "",
+    "authenticationPassword": ""
+  },
+  "account": {
+    "adminEmail": "admin@example.com",
+    "adminUsername": "admin",
+    "adminPassword": "admin",
+    "userEmail": "user@example.com",
+    "userUsername": "user",
+    "userPassword": "user"
+  }
+}

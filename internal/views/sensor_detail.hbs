@@ -1,0 +1,66 @@
+<div class="container text-center">
+  <div class="d-flex justify-content-start">
+    <a class="previous text-start" href="/sensor/">
+      <i class="fas fa-arrow-left me-2"></i>
+      Back
+    </a>
+  </div>
+  <div class="row">
+    <h3>Sensor {{sensor.name}}</h3>
+  </div>
+  <div class="row">
+    <table class="table table-striped table-light table-hover">
+      <thead>
+        <tr>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Id Sensor</th>
+          <th>{{sensor.idSensor}}</th>
+        </tr>
+        <tr>
+          <th scope="row">Name</th>
+          <th>{{sensor.name}}</th>
+        </tr>
+        <tr>
+          <th scope="row">Unit</th>
+          <th>{{sensor.unit}}</th>
+        </tr>
+        <tr>
+          <th scope="row">Id Node</th>
+          <th>{{sensor.idNode}}</th>
+        </tr>
+        <tr>
+          <th scope="row">Id Hardware</th>
+          <th>{{sensor.idHardware}}</th>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="row">
+    <h3>Channel</h3>
+  </div>
+  <div class="row">
+    <table class="table table-striped table-light table-hover">
+      <thead>
+        <tr>
+          <th scope="col">Time</th>
+          <th scope="col">Value</th>
+          <th scope="col">Id Sensor</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each channel as |c|}}
+          {{#with c}}
+            <tr>
+              <th scope="row">{{time}}</th>
+              <td>{{value}}</td>
+              <td>{{idSensor}}</td>
+            </tr>
+          {{/with}}
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>
