@@ -1,0 +1,33 @@
+CREATE TABLE IF NOT EXISTS user_person (
+  id_user SERIAL PRIMARY KEY, 
+  username VARCHAR (255) NOT NULL UNIQUE, 
+  email VARCHAR (255) NOT NULL UNIQUE, 
+  password VARCHAR (255) NOT NULL, 
+  status BOOLEAN DEFAULT FALSE, 
+  isadmin BOOLEAN DEFAULT FALSE
+);
+CREATE TABLE IF NOT EXISTS hardware (
+  id_hardware SERIAL PRIMARY KEY, 
+  name VARCHAR (255) NOT NULL, 
+  type VARCHAR (255) NOT NULL, 
+  description VARCHAR (255) NOT NULL
+);
+CREATE TABLE IF NOT EXISTS node (
+  id_node SERIAL PRIMARY KEY, 
+  id_user INTEGER NOT NULL, 
+  FOREIGN KEY (id_user) REFERENCES user_person (id_user) ON UPDATE CASCADE ON DELETE CASCADE,
+  id_hardware_node INTEGER NOT NULL, 
+  FOREIGN KEY (id_hardware_node) REFERENCES hardware (id_hardware) ON UPDATE CASCADE ON DELETE CASCADE, 
+  name VARCHAR (255) NOT NULL, 
+  location VARCHAR (255) NOT NULL, 
+  id_hardware_sensor INTEGER[10] NOT NULL, 
+  field_sensor TEXT[10] NOT NULL,
+  is_public BOOLEAN DEFAULT false
+);
+
+CREATE TABLE IF NOT EXISTS channel (
+  time TIMESTAMP NOT NULL, 
+  value FLOAT[10] NOT NULL, 
+  id_node INTEGER NOT NULL, 
+  FOREIGN KEY (id_node) REFERENCES node (id_node) ON UPDATE CASCADE ON DELETE CASCADE
+);

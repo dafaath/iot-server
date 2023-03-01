@@ -1,0 +1,32 @@
+{
+  "server": {
+    "host": "localhost",
+    "port": 3000,
+    "env": "dev"
+  },
+  "database": {
+    "username": "postgres",
+    "password": "",
+    "host": "localhost",
+    "port": 5432,
+    "name": "iot-server-version-2"
+  },
+  "jwt": {
+    "secretKey": "9z$C&F)J@NcQfTjWnZr4u7x!A%D*G-KaPdSgUkXp2s5v8y/B?E(H+MbQeThWmZq3t6w9z$C&F)J@NcRfUjXn2r5u7x!A%D*G-KaPdSgVkYp3s6v9y/B?E(H+MbQeThWmZq4t7w!z%C&F)J@NcRfUjXn2r5u8x/A?D(G-KaPdSgVkYp3s6v9y$B&E)H@MbQeThWmZq4t7w!z%C*F-JaNdRfUjXn2r5u8x/A?D(G+KbPeShVkYp3s6v9y$B&E)H@Mc"
+  },
+  "mail": {
+    "smtpHost": "smtp-relay.sendinblue.com",
+    "smtpPort": 587,
+    "senderName": "Server IoT IPB<iot.server.ipb@gmail.com>",
+    "authenticationMail": "iot.server.ipb@gmail.com",
+    "authenticationPassword": "c9LrzmjJ4Et2D5gH"
+  },
+  "account": {
+    "adminEmail": "admin@example.com",
+    "adminUsername": "admin",
+    "adminPassword": "admin",
+    "userEmail": "user@example.com",
+    "userUsername": "user",
+    "userPassword": "user"
+  }
+}

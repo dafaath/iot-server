@@ -1,0 +1,104 @@
+<div class="container text-center">
+  <div class="row">
+    <h3>Node {{node.name}}</h3>
+  </div>
+  <div class="row">
+    <table class="table table-striped table-primary">
+      <thead>
+        <tr>
+        </tr>
+      </thead>
+      <tbody>
+        {{#with node}}
+          <tr>
+            <th>Id Node</th>
+            <td scope="row">{{idNode}}</td>
+          </tr>
+          <tr>
+            <th>Name</th>
+            <td>{{name}}</td>
+          </tr>
+          <tr>
+            <th>Location</th>
+            <td>{{location}}</td>
+          </tr>
+          <tr>
+            <th>Is Public</th>
+            <td>{{isPublic}}</td>
+          </tr>
+          <tr>
+            <th>Id Hardware Node</th>
+            <td>
+              {{idHardwareNode}}
+            </td>
+          </tr>
+          <tr>
+            <th>Id Hardware Sensor</th>
+            <td>
+              <ol>
+                {{#each idHardwareSensor as |id|}}
+                  {{#if id.valid}}
+                    <li>{{id.int64}}</li>
+                  {{else}}
+                    <li>null</li>
+                  {{/if}}
+                {{/each}}
+              </ol>
+            </td>
+          </tr>
+          <tr>
+            <th>Field Sensor</th>
+            <td>
+              <ol>
+                {{#each fieldSensor as |field|}}
+                  {{#if field.valid}}
+                    <li>{{field.string}}</li>
+                  {{else}}
+                    <li>null</li>
+                  {{/if}}
+                {{/each}}
+              </ol>
+            </td>
+          </tr>
+          <tr>
+            <th>Id User</th>
+            <td>{{idUser}}</td>
+          </tr>
+        {{/with}}
+      </tbody>
+    </table>
+  </div>
+  <div class="row">
+    <h3>Feed</h3>
+  </div>
+  <div class="row">
+    <table class="table table-striped table-primary">
+      <thead>
+        <tr>
+          <th scope="col">Time</th>
+          <th scope="col">Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each feed as |f|}}
+          {{#with f}}
+            <tr>
+              <th scope="row">{{time}}</th>
+              <td>
+                <ol>
+                  {{#each value as |v|}}
+                    {{#if v.valid}}
+                      <li>{{v.float64}}</li>
+                    {{else}}
+                      <li>null</li>
+                    {{/if}}
+                  {{/each}}
+                </ol>
+              </td>
+            </tr>
+          {{/with}}
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>

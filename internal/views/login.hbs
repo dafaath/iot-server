@@ -1,0 +1,68 @@
+<!-- Section: Design Block -->
+<div class="container">
+  <section class="text-center text-lg-start">
+    <style>
+      .rounded-t-5 { border-top-left-radius: 0.5rem; border-top-right-radius:
+      0.5rem; } @media (min-width: 992px) { .rounded-tr-lg-0 {
+      border-top-right-radius: 0; } .rounded-bl-lg-5 {
+      border-bottom-left-radius: 0.5rem; } }
+    </style>
+    <div class="card mb-3">
+      <div class="row g-0 d-flex align-items-center">
+        <div class="col-lg-4 d-none d-lg-flex">
+          <img
+            src="https://mdbootstrap.com/img/new/ecommerce/vertical/004.jpg"
+            alt="Trendy Pants and Shoes"
+            class="w-100 rounded-t-5 rounded-tr-lg-0 rounded-bl-lg-5"
+          />
+        </div>
+        <div class="col-lg-8">
+          <div class="card-body py-5 px-md-5">
+            <h2 class="fw-bold mb-5">Login</h2>
+            <form id="submit-form">
+              <!-- Email input -->
+              <div class="form-outline mb-4">
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  class="form-control"
+                />
+                <label class="form-label" for="username">Username</label>
+              </div>
+
+              <!-- Password input -->
+              <div class="form-outline mb-4">
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  class="form-control"
+                />
+                <label class="form-label" for="password">Password</label>
+              </div>
+
+              <!-- 2 column grid layout for inline styling -->
+              <div class="row mb-4">
+                <div class="col">
+                  <!-- Simple link -->
+                  <a href="/user/forget-password">Forgot password?</a>
+                </div>
+              </div>
+
+              <!-- Submit button -->
+              <button type="submit" class="btn btn-primary btn-block mb-4">
+                Login
+              </button>
+
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+<!-- Section: Design Block -->
+
+<script src="/static/js/login.js"></script>
