@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"runtime/debug"
 
@@ -39,6 +40,7 @@ func ChangeErrorIfErrorIsNotFound(err error, newError error) error {
 	}
 	return err
 }
+
 func FiberErrorHandler(c *fiber.Ctx, err error) error {
 	// Status code defaults to 500
 	code := fiber.StatusInternalServerError
@@ -54,6 +56,24 @@ func FiberErrorHandler(c *fiber.Ctx, err error) error {
 	// Set Content-Type: text/plain; charset=utf-8
 	c.Set(fiber.HeaderContentType, fiber.MIMETextPlainCharsetUTF8)
 
-	// Return status code with error message
-	return c.Status(code).SendString(err.Error())
+	accept := c.Accepts("application/json", "text/html")
+
+	switch accept {
+	case "text/html":
+		message := err.Error()
+		showLogin := false
+		if code == 401 || code == 403 {
+			showLogin = true
+		}
+		return c.Render("error", fiber.Map{
+			"code":      code,
+			"status":    http.StatusText(code),
+			"message":   message,
+			"showLogin": showLogin,
+		}, "layouts/main")
+	default:
+		// Return status code with error message
+		return c.Status(code).SendString(err.Error())
+	}
+
 }

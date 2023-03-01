@@ -15,6 +15,8 @@ import (
 	"github.com/dafaath/iot-server/v2/internal/repositories"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cache"
+	"github.com/gofiber/fiber/v2/middleware/etag"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/template/handlebars"
 )
@@ -45,6 +47,8 @@ func main() {
 			ErrorHandler: helper.FiberErrorHandler,
 		},
 	)
+	app.Static("/static", "./internal/public")
+
 	// BEGIN Other dependencies declaration
 	config := configs.GetConfig()
 	validate := validator.New()
@@ -97,8 +101,8 @@ func main() {
 	// END
 
 	// Middleware
-	// app.Use(cache.New())
-	// app.Use(etag.New())
+	app.Use(cache.New())
+	app.Use(etag.New())
 
 	// Initialize default config
 

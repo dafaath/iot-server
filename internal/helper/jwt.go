@@ -67,10 +67,25 @@ func ValidateUserToken(tokenString string) (user entities.UserRead, err error) {
 }
 
 func ValidateUserCredentical(c *fiber.Ctx) (user entities.UserRead, err error) {
+	authorizationCookies := c.Cookies("authorization", "")
+	authorizationCookies, err = url.QueryUnescape(authorizationCookies)
+	if err != nil {
+		return user, err
+	}
+
 	headers := c.GetReqHeaders()
-	authorization, ok := headers["Authorization"]
-	if !ok {
+	authorizationHeaders, haveAuthorizationHeader := headers["Authorization"]
+
+	authorization := ""
+
+	if !haveAuthorizationHeader && authorizationCookies == "" {
 		return user, fiber.NewError(401, "Authorization not present")
+	}
+
+	if haveAuthorizationHeader {
+		authorization = authorizationHeaders
+	} else {
+		authorization = authorizationCookies
 	}
 
 	authorizationSplit := strings.Split(authorization, " ")

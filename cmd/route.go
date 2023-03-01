@@ -20,15 +20,25 @@ func NewRouter(app *fiber.App, authMiddleware *middlewares.AuthenticationMiddlew
 
 func (r *Router) CreateHealthCheckRoute() {
 	r.app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Server OK")
+		accept := c.Accepts("application/json", "text/html")
+
+		switch accept {
+		case "text/html":
+			return c.Render("index", fiber.Map{}, "layouts/main")
+		default:
+			return c.SendString("Server OK")
+		}
 	})
 }
 
 func (r *Router) CreateUserRoute(handler *handlers.UserHandler) {
 	userRouter := r.app.Group("/user")
 	userRouter.Post("/signup", handler.Register)
+	userRouter.Get("/signup", handler.RegisterPage)
 	userRouter.Post("/login", handler.Login)
+	userRouter.Get("/login", handler.LoginPage)
 	userRouter.Post("/forget-password", handler.ForgotPassword)
+	userRouter.Get("/forget-password", handler.ForgotPasswordPage)
 	userRouter.Get("/activation", handler.Activation)
 	userRouter.Get("/", r.authMiddleware.ValidateAdmin, handler.GetAll)
 	userRouter.Get("/:id", r.authMiddleware.ValidateAdmin, handler.GetOne)
@@ -38,8 +48,10 @@ func (r *Router) CreateUserRoute(handler *handlers.UserHandler) {
 
 func (r *Router) CreateHardwareRoute(handler *handlers.HardwareHandler) {
 	hardwareRouter := r.app.Group("/hardware")
-	hardwareRouter.Post("/", r.authMiddleware.ValidateAdmin, handler.Create)
+	hardwareRouter.Get("/create", r.authMiddleware.ValidateUser, handler.CreateForm)
+	hardwareRouter.Post("/", r.authMiddleware.ValidateUser, handler.Create)
 	hardwareRouter.Get("/", r.authMiddleware.ValidateUser, handler.GetAll)
+	hardwareRouter.Get("/:id/edit", r.authMiddleware.ValidateUser, handler.UpdateForm)
 	hardwareRouter.Get("/:id", r.authMiddleware.ValidateUser, handler.GetById)
 	hardwareRouter.Put("/:id", r.authMiddleware.ValidateAdmin, handler.Update)
 	hardwareRouter.Delete("/:id", r.authMiddleware.ValidateAdmin, handler.Delete)
@@ -47,13 +59,16 @@ func (r *Router) CreateHardwareRoute(handler *handlers.HardwareHandler) {
 
 func (r *Router) CreateNodeRoute(handler *handlers.NodeHandler) {
 	nodeRouter := r.app.Group("/node")
+	nodeRouter.Get("/create", r.authMiddleware.ValidateUser, handler.CreateForm)
 	nodeRouter.Post("/", r.authMiddleware.ValidateUser, handler.Create)
 	nodeRouter.Get("/", r.authMiddleware.ValidateUser, handler.GetAll)
+	nodeRouter.Get("/:id/edit", r.authMiddleware.ValidateUser, handler.UpdateForm)
 	nodeRouter.Get("/:id", r.authMiddleware.ValidateUser, handler.GetById)
 	nodeRouter.Put("/:id", r.authMiddleware.ValidateUser, handler.Update)
 	nodeRouter.Delete("/:id", r.authMiddleware.ValidateUser, handler.Delete)
 }
 func (r *Router) CreateChannelRoute(handler *handlers.ChannelHandler) {
 	channelRouter := r.app.Group("/channel")
+	channelRouter.Get("/create", r.authMiddleware.ValidateUser, handler.CreateForm)
 	channelRouter.Post("/", r.authMiddleware.ValidateUser, handler.Create)
 }

@@ -28,6 +28,12 @@ func NewHardwareHandler(db *pgxpool.Pool, hardwareRepository *repositories.Hardw
 	}, nil
 }
 
+func (h *HardwareHandler) CreateForm(c *fiber.Ctx) (err error) {
+	return c.Render("hardware_form", fiber.Map{
+		"title": "Add Hardware",
+	}, "layouts/main")
+}
+
 func (h *HardwareHandler) Create(c *fiber.Ctx) (err error) {
 	ctx := context.Background()
 	bodyPayload := &entities.HardwareCreate{}
@@ -104,6 +110,31 @@ func (h *HardwareHandler) GetById(c *fiber.Ctx) (err error) {
 		return c.Status(fiber.StatusOK).JSON(hardware)
 	}
 
+}
+
+func (h *HardwareHandler) UpdateForm(c *fiber.Ctx) (err error) {
+	id, err := h.validator.ParseIdFromUrlParameter(c)
+	if err != nil {
+		return err
+	}
+	ctx := context.Background()
+
+	tx, err := h.db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer helper.CommitOrRollback(ctx, tx, &err)
+
+	hardware, err := h.repository.GetById(ctx, tx, id)
+	if err != nil {
+		return err
+	}
+
+	return c.Render("hardware_form", fiber.Map{
+		"title":    "Update Hardware",
+		"hardware": hardware,
+		"edit":     true,
+	}, "layouts/main")
 }
 
 func (h *HardwareHandler) Update(c *fiber.Ctx) (err error) {

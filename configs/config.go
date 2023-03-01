@@ -3,10 +3,13 @@ package configs
 import (
 	"bytes"
 	"log"
+	"os"
+	"path"
 	"strings"
 
 	_ "embed"
 
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
@@ -14,7 +17,6 @@ type Config struct {
 	Server struct {
 		Host string `json:"host"`
 		Port int    `json:"port"`
-		Env  string `json:"env"`
 	} `json:"server"`
 	Database struct {
 		Username string `json:"username"`
@@ -48,7 +50,18 @@ var configFile []byte
 var cfg Config
 
 func init() {
+	working_directory, err := os.Getwd()
+	if err != nil {
+		log.Fatalf("Error getting working directory, %s", err.Error())
+	}
+
 	configSettings := viper.New()
+
+	env_path := path.Join(working_directory, ".env")
+	err = godotenv.Load(env_path)
+	if err != nil {
+		log.Fatalf("Error getting reading env, %s", err.Error())
+	}
 
 	// Environment variables
 	configSettings.AutomaticEnv()
@@ -58,7 +71,7 @@ func init() {
 	// Configuration file
 	configSettings.SetConfigType("json")
 
-	err := configSettings.ReadConfig(bytes.NewBuffer(configFile))
+	err = configSettings.ReadConfig(bytes.NewBuffer(configFile))
 	if err != nil {
 		log.Fatalf("Error reading log, %s", err.Error())
 	}

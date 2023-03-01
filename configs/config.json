@@ -9,17 +9,17 @@
     "password": "",
     "host": "localhost",
     "port": 5432,
-    "name": "iot-server-version-2"
+    "name": "iot-server"
   },
   "jwt": {
-    "secretKey": "9z$C&F)J@NcQfTjWnZr4u7x!A%D*G-KaPdSgUkXp2s5v8y/B?E(H+MbQeThWmZq3t6w9z$C&F)J@NcRfUjXn2r5u7x!A%D*G-KaPdSgVkYp3s6v9y/B?E(H+MbQeThWmZq4t7w!z%C&F)J@NcRfUjXn2r5u8x/A?D(G-KaPdSgVkYp3s6v9y$B&E)H@MbQeThWmZq4t7w!z%C*F-JaNdRfUjXn2r5u8x/A?D(G+KbPeShVkYp3s6v9y$B&E)H@Mc"
+    "secretKey": ""
   },
   "mail": {
-    "smtpHost": "smtp-relay.sendinblue.com",
+    "smtpHost": "smtp.gmail.com",
     "smtpPort": 587,
     "senderName": "Server IoT IPB<iot.server.ipb@gmail.com>",
-    "authenticationMail": "iot.server.ipb@gmail.com",
-    "authenticationPassword": "c9LrzmjJ4Et2D5gH"
+    "authenticationMail": "",
+    "authenticationPassword": ""
   },
   "account": {
     "adminEmail": "admin@example.com",

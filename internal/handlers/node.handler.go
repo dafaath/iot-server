@@ -32,6 +32,12 @@ func NewNodeHandler(db *pgxpool.Pool, nodeRepository *repositories.NodeRepositor
 	}, nil
 }
 
+func (h *NodeHandler) CreateForm(c *fiber.Ctx) (err error) {
+	return c.Render("node_form", fiber.Map{
+		"title": "Create Node",
+	}, "layouts/main")
+}
+
 func (h *NodeHandler) Create(c *fiber.Ctx) (err error) {
 	ctx := context.Background()
 	bodyPayload := entities.NodeCreate{}
@@ -245,7 +251,31 @@ func (h *NodeHandler) GetById(c *fiber.Ctx) (err error) {
 			Feed: feed,
 		})
 	}
+}
 
+func (h *NodeHandler) UpdateForm(c *fiber.Ctx) (err error) {
+	id, err := h.validator.ParseIdFromUrlParameter(c)
+	if err != nil {
+		return err
+	}
+	ctx := context.Background()
+
+	tx, err := h.db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer helper.CommitOrRollback(ctx, tx, &err)
+
+	node, err := h.repository.GetById(ctx, tx, id)
+	if err != nil {
+		return err
+	}
+
+	return c.Render("node_form", fiber.Map{
+		"title": "Edit Node",
+		"node":  node,
+		"edit":  true,
+	}, "layouts/main")
 }
 
 func (h *NodeHandler) Update(c *fiber.Ctx) (err error) {
