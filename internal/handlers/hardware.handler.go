@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	"github.com/dafaath/iot-server/internal/dependencies"
 	"github.com/dafaath/iot-server/internal/entities"
@@ -68,6 +69,18 @@ func (h *HardwareHandler) GetAll(c *fiber.Ctx) (err error) {
 	accept := c.Accepts("application/json", "text/html")
 	switch accept {
 	case "text/html":
+		sort.Slice(nodes, func(i, j int) bool {
+			return nodes[i].Name < nodes[j].Name
+		})
+
+		sort.Slice(nodes, func(i, j int) bool {
+			return nodes[i].Type < nodes[j].Type
+		})
+
+		sort.Slice(sensors, func(i, j int) bool {
+			return sensors[i].Name < sensors[j].Name
+		})
+
 		return c.Render("hardware", fiber.Map{
 			"title":  "Hardware",
 			"node":   nodes,

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"sort"
 	"strings"
@@ -94,6 +95,10 @@ func (h *SensorHandler) GetAll(c *fiber.Ctx) (err error) {
 	accept := c.Accepts("application/json", "text/html")
 	switch accept {
 	case "text/html":
+		sort.Slice(sensors, func(i, j int) bool {
+			return sensors[i].Name < sensors[j].Name
+		})
+
 		return c.Render("sensor", fiber.Map{
 			"title":   "Sensor",
 			"sensors": sensors,
@@ -141,10 +146,24 @@ func (h *SensorHandler) GetById(c *fiber.Ctx) (err error) {
 			return channels[i].Time.Before(channels[j].Time)
 		})
 
+		mappedChannel := []interface{}{}
+		for _, channel := range channels {
+			// Convert time to epoch milliseconds
+			mappedChannel = append(mappedChannel, []interface{}{
+				channel.Time.UnixMilli(),
+				channel.Value,
+			})
+		}
+
+		channelJSONString, err := json.Marshal(mappedChannel)
+		if err != nil {
+			return err
+		}
+
 		return c.Render("sensor_detail", fiber.Map{
 			"title":   "Sensor Detail",
 			"sensor":  sensor,
-			"channel": channels,
+			"channel": string(channelJSONString),
 		}, "layouts/main")
 	default:
 		sensorWithChannelItem := entities.SensorWithChannel{
