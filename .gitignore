@@ -8,7 +8,7 @@
 *.so
 *.dylib
 
-*.env
+.env
 
 # Test binary, built with `go test -c`
 *.test
@@ -28,5 +28,5 @@ build/
 # Go workspace file
 go.work
 
-# vs code 
+# vs code
 *.vscode
