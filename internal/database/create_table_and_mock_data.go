@@ -2,6 +2,8 @@ package database
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"io/ioutil"
 	"log"
 	"path/filepath"
@@ -11,7 +13,6 @@ import (
 	"github.com/dafaath/iot-server/internal/helper"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type SQLType int
@@ -27,8 +28,11 @@ const (
 )
 
 func hashPassword(ctx context.Context, password string) (hashedPassword string, err error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return string(bytes), err
+	hasher := sha256.New()
+	hasher.Write([]byte(password))
+	passwordHashBytes := hasher.Sum(nil)
+	passwordHashString := hex.EncodeToString(passwordHashBytes)
+	return passwordHashString, nil
 }
 
 func openSqlFile(sqlType SQLType) string {

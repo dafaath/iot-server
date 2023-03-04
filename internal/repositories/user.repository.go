@@ -2,6 +2,8 @@ package repositories
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 
 	"github.com/dafaath/iot-server/configs"
@@ -10,7 +12,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
-	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/gomail.v2"
 )
 
@@ -219,13 +220,28 @@ func (u *UserRepository) MatchPassword(ctx context.Context, tx pgx.Tx, user enti
 		return err
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(userPassword), []byte(password))
+	passwordHashString, err := u.hashPassword(ctx, password)
+	if err != nil {
+		return err
+	}
+
+	if userPassword != passwordHashString {
+		return fiber.NewError(401, "Wrong password")
+	}
+
 	return err
 }
 
 func (u *UserRepository) hashPassword(ctx context.Context, password string) (hashedPassword string, err error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return string(bytes), err
+	hasher := sha256.New()
+	_, err = hasher.Write([]byte(password))
+	if err != nil {
+		return "", err
+	}
+
+	passwordHashBytes := hasher.Sum(nil)
+	passwordHashString := hex.EncodeToString(passwordHashBytes)
+	return passwordHashString, nil
 }
 
 func (u *UserRepository) SendEmail(ctx context.Context, to string, subject string, body string) (err error) {
