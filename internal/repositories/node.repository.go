@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/dafaath/iot-server/internal/entities"
+	"github.com/dafaath/iot-server/internal/helper"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5"
 )
@@ -27,7 +28,7 @@ func (u *NodeRepository) nodePointer(node *entities.Node) []interface{} {
 	return []interface{}{&node.IdNode, &node.Name, &node.Location, &node.IdUser, &node.IdHardware}
 }
 
-func (h *NodeRepository) Create(ctx context.Context, tx pgx.Tx, payload *entities.NodeCreate, currentUser *entities.UserRead) (node entities.Node, err error) {
+func (h *NodeRepository) Create(ctx context.Context, tx helper.Querier, payload *entities.NodeCreate, currentUser *entities.UserRead) (node entities.Node, err error) {
 	node = entities.Node{
 		NodeCreate: *payload,
 		IdUser:     currentUser.IdUser,
@@ -45,7 +46,7 @@ func (h *NodeRepository) Create(ctx context.Context, tx pgx.Tx, payload *entitie
 	return node, nil
 }
 
-func (u *NodeRepository) GetAll(ctx context.Context, tx pgx.Tx, currentUser *entities.UserRead) (nodes []entities.Node, err error) {
+func (u *NodeRepository) GetAll(ctx context.Context, tx helper.Querier, currentUser *entities.UserRead) (nodes []entities.Node, err error) {
 	nodes = []entities.Node{}
 	var sqlStatement string
 	var rows pgx.Rows
@@ -81,7 +82,7 @@ func (u *NodeRepository) GetAll(ctx context.Context, tx pgx.Tx, currentUser *ent
 	return nodes, nil
 }
 
-func (u *NodeRepository) GetById(ctx context.Context, tx pgx.Tx, id int) (node entities.Node, err error) {
+func (u *NodeRepository) GetById(ctx context.Context, tx helper.Querier, id int) (node entities.Node, err error) {
 	sqlStatement := fmt.Sprintf(`SELECT %s FROM "node" WHERE id_node=$1`, u.nodeField())
 	err = tx.QueryRow(ctx, sqlStatement, id).Scan(
 		u.nodePointer(&node)...,
@@ -95,7 +96,7 @@ func (u *NodeRepository) GetById(ctx context.Context, tx pgx.Tx, id int) (node e
 	return node, nil
 }
 
-func (u *NodeRepository) GetHardwareNode(ctx context.Context, tx pgx.Tx, hardwareId int) ([]entities.Node, error) {
+func (u *NodeRepository) GetHardwareNode(ctx context.Context, tx helper.Querier, hardwareId int) ([]entities.Node, error) {
 	nodes := []entities.Node{}
 	sqlStatement := fmt.Sprintf(`SELECT %s FROM "node" WHERE id_hardware=$1`, u.nodeField())
 	rows, err := tx.Query(ctx, sqlStatement, hardwareId)
@@ -121,7 +122,7 @@ func (u *NodeRepository) GetHardwareNode(ctx context.Context, tx pgx.Tx, hardwar
 	return nodes, nil
 }
 
-func (u *NodeRepository) Update(ctx context.Context, tx pgx.Tx, node *entities.Node, payload *entities.NodeUpdate) (err error) {
+func (u *NodeRepository) Update(ctx context.Context, tx helper.Querier, node *entities.Node, payload *entities.NodeUpdate) (err error) {
 	payload.ChangeSettedFieldOnly(node)
 
 	sqlStatement := `
@@ -139,7 +140,7 @@ func (u *NodeRepository) Update(ctx context.Context, tx pgx.Tx, node *entities.N
 	return nil
 }
 
-func (u *NodeRepository) Delete(ctx context.Context, tx pgx.Tx, id int) (err error) {
+func (u *NodeRepository) Delete(ctx context.Context, tx helper.Querier, id int) (err error) {
 	sqlStatement := `DELETE FROM "node" WHERE id_node=$1`
 	res, err := tx.Exec(ctx, sqlStatement, id)
 	if err != nil {

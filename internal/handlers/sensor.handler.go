@@ -8,7 +8,6 @@ import (
 
 	"github.com/dafaath/iot-server/internal/dependencies"
 	"github.com/dafaath/iot-server/internal/entities"
-	"github.com/dafaath/iot-server/internal/helper"
 	"github.com/dafaath/iot-server/internal/repositories"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -47,18 +46,12 @@ func (h *SensorHandler) Create(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	node, err := h.nodeRepository.GetById(ctx, tx, bodyPayload.IdNode)
+	node, err := h.nodeRepository.GetById(ctx, h.db, bodyPayload.IdNode)
 	if err != nil {
 		return err
 	}
 
-	hardware, err := h.hardwareRepository.GetById(ctx, tx, bodyPayload.IdHardware)
+	hardware, err := h.hardwareRepository.GetById(ctx, h.db, bodyPayload.IdHardware)
 	if err != nil {
 		return err
 	}
@@ -77,7 +70,7 @@ func (h *SensorHandler) Create(c *fiber.Ctx) (err error) {
 		return fiber.NewError(403, "You can’t use other user’s node")
 	}
 
-	_, err = h.repository.Create(ctx, tx, &bodyPayload)
+	_, err = h.repository.Create(ctx, h.db, &bodyPayload)
 	if err != nil {
 		return err
 	}
@@ -87,18 +80,13 @@ func (h *SensorHandler) Create(c *fiber.Ctx) (err error) {
 
 func (h *SensorHandler) GetAll(c *fiber.Ctx) (err error) {
 	ctx := context.Background()
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
 
 	currentUser, err := h.validator.GetAuthentication(c)
 	if err != nil {
 		return err
 	}
 
-	sensors, err := h.repository.GetAll(ctx, tx, &currentUser)
+	sensors, err := h.repository.GetAll(ctx, h.db, &currentUser)
 	if err != nil {
 		return err
 	}
@@ -122,23 +110,17 @@ func (h *SensorHandler) GetById(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	sensor, err := h.repository.GetById(ctx, tx, id)
+	sensor, err := h.repository.GetById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
 
-	channels, err := h.repository.GetSensorChannel(ctx, tx, id)
+	channels, err := h.repository.GetSensorChannel(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
 
-	sensorOwnerId, err := h.repository.GetIdUserWhoOwnSensorById(ctx, tx, id)
+	sensorOwnerId, err := h.repository.GetIdUserWhoOwnSensorById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
@@ -180,13 +162,7 @@ func (h *SensorHandler) UpdateForm(c *fiber.Ctx) (err error) {
 	}
 	ctx := context.Background()
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	sensor, err := h.repository.GetById(ctx, tx, id)
+	sensor, err := h.repository.GetById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
@@ -211,18 +187,12 @@ func (h *SensorHandler) Update(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	sensor, err := h.repository.GetById(ctx, tx, id)
+	sensor, err := h.repository.GetById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
 
-	sensorOwnerId, err := h.repository.GetIdUserWhoOwnSensorById(ctx, tx, id)
+	sensorOwnerId, err := h.repository.GetIdUserWhoOwnSensorById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
@@ -236,7 +206,7 @@ func (h *SensorHandler) Update(c *fiber.Ctx) (err error) {
 		return fiber.NewError(403, "You can’t edit another user’s sensor")
 	}
 
-	err = h.repository.Update(ctx, tx, &sensor, bodyPayload)
+	err = h.repository.Update(ctx, h.db, &sensor, bodyPayload)
 	if err != nil {
 		return err
 	}
@@ -251,13 +221,7 @@ func (h *SensorHandler) Delete(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	sensorOwnerId, err := h.repository.GetIdUserWhoOwnSensorById(ctx, tx, id)
+	sensorOwnerId, err := h.repository.GetIdUserWhoOwnSensorById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
@@ -271,7 +235,7 @@ func (h *SensorHandler) Delete(c *fiber.Ctx) (err error) {
 		return fiber.NewError(403, "You can't delete another user's sensor")
 	}
 
-	err = h.repository.Delete(ctx, tx, id)
+	err = h.repository.Delete(ctx, h.db, id)
 	if err != nil {
 		return err
 	}

@@ -7,7 +7,6 @@ import (
 
 	"github.com/dafaath/iot-server/internal/dependencies"
 	"github.com/dafaath/iot-server/internal/entities"
-	"github.com/dafaath/iot-server/internal/helper"
 	"github.com/dafaath/iot-server/internal/repositories"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -48,12 +47,6 @@ func (h *NodeHandler) Create(c *fiber.Ctx) (err error) {
 		parseChannel <- err
 	}()
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
 	err = <-parseChannel
 	if err != nil {
 		return err
@@ -62,7 +55,7 @@ func (h *NodeHandler) Create(c *fiber.Ctx) (err error) {
 	// Make hardware validation async in background
 	validateHardwareChannel := make(chan error)
 	go func() {
-		hardware, err := h.hardwareRepository.GetById(ctx, tx, bodyPayload.IdHardware)
+		hardware, err := h.hardwareRepository.GetById(ctx, h.db, bodyPayload.IdHardware)
 		if err != nil {
 			validateHardwareChannel <- err
 			return
@@ -87,7 +80,7 @@ func (h *NodeHandler) Create(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	_, err = h.repository.Create(ctx, tx, &bodyPayload, &currentUser)
+	_, err = h.repository.Create(ctx, h.db, &bodyPayload, &currentUser)
 	if err != nil {
 		return err
 	}
@@ -97,18 +90,13 @@ func (h *NodeHandler) Create(c *fiber.Ctx) (err error) {
 
 func (h *NodeHandler) GetAll(c *fiber.Ctx) (err error) {
 	ctx := context.Background()
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
 
 	currentUser, err := h.validator.GetAuthentication(c)
 	if err != nil {
 		return err
 	}
 
-	nodes, err := h.repository.GetAll(ctx, tx, &currentUser)
+	nodes, err := h.repository.GetAll(ctx, h.db, &currentUser)
 	if err != nil {
 		return err
 	}
@@ -132,19 +120,13 @@ func (h *NodeHandler) GetById(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
 	type NodeResponse struct {
 		node entities.Node
 		err  error
 	}
 	nodeResponseChannel := make(chan NodeResponse)
 	go func() {
-		node, err := h.repository.GetById(ctx, tx, id)
+		node, err := h.repository.GetById(ctx, h.db, id)
 		nodeResponseChannel <- NodeResponse{node, err}
 	}()
 
@@ -164,12 +146,12 @@ func (h *NodeHandler) GetById(c *fiber.Ctx) (err error) {
 		return fiber.NewError(403, "You can’t see another user’s node")
 	}
 
-	hardware, err := h.hardwareRepository.GetById(ctx, tx, node.IdHardware)
+	hardware, err := h.hardwareRepository.GetById(ctx, h.db, node.IdHardware)
 	if err != nil {
 		return err
 	}
 
-	sensors, err := h.sensorRepository.GetNodeSensor(ctx, tx, node.IdNode)
+	sensors, err := h.sensorRepository.GetNodeSensor(ctx, h.db, node.IdNode)
 	if err != nil {
 		return err
 	}
@@ -199,13 +181,7 @@ func (h *NodeHandler) UpdateForm(c *fiber.Ctx) (err error) {
 	}
 	ctx := context.Background()
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	node, err := h.repository.GetById(ctx, tx, id)
+	node, err := h.repository.GetById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
@@ -230,13 +206,7 @@ func (h *NodeHandler) Update(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	node, err := h.repository.GetById(ctx, tx, id)
+	node, err := h.repository.GetById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
@@ -250,7 +220,7 @@ func (h *NodeHandler) Update(c *fiber.Ctx) (err error) {
 		return fiber.NewError(403, "Can’t edit another user’s data")
 	}
 
-	err = h.repository.Update(ctx, tx, &node, bodyPayload)
+	err = h.repository.Update(ctx, h.db, &node, bodyPayload)
 	if err != nil {
 		return err
 	}
@@ -265,13 +235,7 @@ func (h *NodeHandler) Delete(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	node, err := h.repository.GetById(ctx, tx, id)
+	node, err := h.repository.GetById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
@@ -285,7 +249,7 @@ func (h *NodeHandler) Delete(c *fiber.Ctx) (err error) {
 		return fiber.NewError(403, "You can’t delete another user’s node")
 	}
 
-	err = h.repository.Delete(ctx, tx, id)
+	err = h.repository.Delete(ctx, h.db, id)
 	if err != nil {
 		return err
 	}

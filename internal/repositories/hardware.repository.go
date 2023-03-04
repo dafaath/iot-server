@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/dafaath/iot-server/internal/entities"
+	"github.com/dafaath/iot-server/internal/helper"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5"
 )
@@ -23,7 +24,7 @@ func (u *HardwareRepository) hardwarePointer(hardware *entities.Hardware) []inte
 	return []interface{}{&hardware.IdHardware, &hardware.Name, &hardware.Type, &hardware.Description}
 }
 
-func (h *HardwareRepository) Create(ctx context.Context, tx pgx.Tx, payload *entities.HardwareCreate) (hardware entities.Hardware, err error) {
+func (h *HardwareRepository) Create(ctx context.Context, tx helper.Querier, payload *entities.HardwareCreate) (hardware entities.Hardware, err error) {
 	hardware = entities.Hardware{
 		HardwareCreate: *payload,
 	}
@@ -42,7 +43,7 @@ func (h *HardwareRepository) Create(ctx context.Context, tx pgx.Tx, payload *ent
 	return hardware, nil
 }
 
-func (u *HardwareRepository) getAllItem(ctx context.Context, tx pgx.Tx, sqlStatement string) (hardwares []entities.Hardware, err error) {
+func (u *HardwareRepository) getAllItem(ctx context.Context, tx helper.Querier, sqlStatement string) (hardwares []entities.Hardware, err error) {
 	hardwares = []entities.Hardware{}
 	rows, err := tx.Query(ctx, sqlStatement)
 	if err != nil {
@@ -67,21 +68,21 @@ func (u *HardwareRepository) getAllItem(ctx context.Context, tx pgx.Tx, sqlState
 
 }
 
-func (u *HardwareRepository) GetAllHardware(ctx context.Context, tx pgx.Tx) (hardwares []entities.Hardware, err error) {
+func (u *HardwareRepository) GetAllHardware(ctx context.Context, tx helper.Querier) (hardwares []entities.Hardware, err error) {
 	sqlStatement := fmt.Sprintf(`SELECT %s FROM "hardware"`, u.hardwareField())
 	return u.getAllItem(ctx, tx, sqlStatement)
 }
 
-func (u *HardwareRepository) GetAllNode(ctx context.Context, tx pgx.Tx) (hardwares []entities.Hardware, err error) {
+func (u *HardwareRepository) GetAllNode(ctx context.Context, tx helper.Querier) (hardwares []entities.Hardware, err error) {
 	sqlStatement := fmt.Sprintf(`SELECT %s FROM "hardware" WHERE lower(type) = 'single-board computer' or lower(type) = 'microcontroller unit'`, u.hardwareField())
 	return u.getAllItem(ctx, tx, sqlStatement)
 }
-func (u *HardwareRepository) GetAllSensor(ctx context.Context, tx pgx.Tx) (hardwares []entities.Hardware, err error) {
+func (u *HardwareRepository) GetAllSensor(ctx context.Context, tx helper.Querier) (hardwares []entities.Hardware, err error) {
 	sqlStatement := fmt.Sprintf(`SELECT %s FROM "hardware" WHERE lower(type) = 'sensor'`, u.hardwareField())
 	return u.getAllItem(ctx, tx, sqlStatement)
 }
 
-func (u *HardwareRepository) GetById(ctx context.Context, tx pgx.Tx, id int) (hardware entities.Hardware, err error) {
+func (u *HardwareRepository) GetById(ctx context.Context, tx helper.Querier, id int) (hardware entities.Hardware, err error) {
 	sqlStatement := fmt.Sprintf(`SELECT %s FROM "hardware" WHERE id_hardware=$1`, u.hardwareField())
 	err = tx.QueryRow(ctx, sqlStatement, id).Scan(
 		u.hardwarePointer(&hardware)...,
@@ -95,7 +96,7 @@ func (u *HardwareRepository) GetById(ctx context.Context, tx pgx.Tx, id int) (ha
 	return hardware, nil
 }
 
-func (u *HardwareRepository) Update(ctx context.Context, tx pgx.Tx, hardware *entities.Hardware, payload *entities.HardwareUpdate) (err error) {
+func (u *HardwareRepository) Update(ctx context.Context, tx helper.Querier, hardware *entities.Hardware, payload *entities.HardwareUpdate) (err error) {
 	payload.ChangeSettedFieldOnly(hardware)
 
 	sqlStatement := `
@@ -113,7 +114,7 @@ func (u *HardwareRepository) Update(ctx context.Context, tx pgx.Tx, hardware *en
 	return nil
 }
 
-func (u *HardwareRepository) Delete(ctx context.Context, tx pgx.Tx, id int) (err error) {
+func (u *HardwareRepository) Delete(ctx context.Context, tx helper.Querier, id int) (err error) {
 	sqlStatement := `DELETE FROM "hardware" WHERE id_hardware=$1`
 	res, err := tx.Exec(ctx, sqlStatement, id)
 	if err != nil {

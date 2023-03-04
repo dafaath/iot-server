@@ -6,7 +6,6 @@ import (
 
 	"github.com/dafaath/iot-server/internal/dependencies"
 	"github.com/dafaath/iot-server/internal/entities"
-	"github.com/dafaath/iot-server/internal/helper"
 	"github.com/dafaath/iot-server/internal/repositories"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -45,13 +44,7 @@ func (h *HardwareHandler) Create(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	_, err = h.repository.Create(ctx, tx, bodyPayload)
+	_, err = h.repository.Create(ctx, h.db, bodyPayload)
 	if err != nil {
 		return err
 	}
@@ -61,18 +54,13 @@ func (h *HardwareHandler) Create(c *fiber.Ctx) (err error) {
 
 func (h *HardwareHandler) GetAll(c *fiber.Ctx) (err error) {
 	ctx := context.Background()
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
 
-	nodes, err := h.repository.GetAllNode(ctx, tx)
+	nodes, err := h.repository.GetAllNode(ctx, h.db)
 	if err != nil {
 		return err
 	}
 
-	sensors, err := h.repository.GetAllSensor(ctx, tx)
+	sensors, err := h.repository.GetAllSensor(ctx, h.db)
 	if err != nil {
 		return err
 	}
@@ -102,20 +90,14 @@ func (h *HardwareHandler) GetById(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	hardware, err := h.repository.GetById(ctx, tx, id)
+	hardware, err := h.repository.GetById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
 
 	switch hardware.Type {
 	case "microcontroller unit", "single-board computer":
-		nodes, err := h.nodeRepository.GetHardwareNode(ctx, tx, hardware.IdHardware)
+		nodes, err := h.nodeRepository.GetHardwareNode(ctx, h.db, hardware.IdHardware)
 		if err != nil {
 			return err
 		}
@@ -136,7 +118,7 @@ func (h *HardwareHandler) GetById(c *fiber.Ctx) (err error) {
 		}
 
 	case "sensor":
-		sensors, err := h.sensorRepository.GetHardwareSensor(ctx, tx, id)
+		sensors, err := h.sensorRepository.GetHardwareSensor(ctx, h.db, id)
 		if err != nil {
 			return err
 		}
@@ -168,13 +150,7 @@ func (h *HardwareHandler) UpdateForm(c *fiber.Ctx) (err error) {
 	}
 	ctx := context.Background()
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	hardware, err := h.repository.GetById(ctx, tx, id)
+	hardware, err := h.repository.GetById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
@@ -199,18 +175,12 @@ func (h *HardwareHandler) Update(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	hardware, err := h.repository.GetById(ctx, tx, id)
+	hardware, err := h.repository.GetById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
 
-	err = h.repository.Update(ctx, tx, &hardware, bodyPayload)
+	err = h.repository.Update(ctx, h.db, &hardware, bodyPayload)
 	if err != nil {
 		return err
 	}
@@ -225,18 +195,12 @@ func (h *HardwareHandler) Delete(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	_, err = h.repository.GetById(ctx, tx, id)
+	_, err = h.repository.GetById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
 
-	err = h.repository.Delete(ctx, tx, id)
+	err = h.repository.Delete(ctx, h.db, id)
 	if err != nil {
 		return err
 	}

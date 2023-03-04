@@ -5,7 +5,6 @@ import (
 
 	"github.com/dafaath/iot-server/internal/dependencies"
 	"github.com/dafaath/iot-server/internal/entities"
-	"github.com/dafaath/iot-server/internal/helper"
 	"github.com/dafaath/iot-server/internal/repositories"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -42,12 +41,6 @@ func (h *ChannelHandler) Create(c *fiber.Ctx) (err error) {
 		parseChannel <- err
 	}()
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
 	// Get current user async
 	type currentUserResult struct {
 		res entities.UserRead
@@ -75,7 +68,7 @@ func (h *ChannelHandler) Create(c *fiber.Ctx) (err error) {
 	}
 	sensorOwnerIdChannel := make(chan sensorOwnerIdResult)
 	go func() {
-		sensorOwnerId, err := h.sensorRepository.GetIdUserWhoOwnSensorById(ctx, tx, bodyPayload.IdSensor)
+		sensorOwnerId, err := h.sensorRepository.GetIdUserWhoOwnSensorById(ctx, h.db, bodyPayload.IdSensor)
 		sensorOwnerIdChannel <- sensorOwnerIdResult{
 			res: sensorOwnerId,
 			err: err,
@@ -100,7 +93,7 @@ func (h *ChannelHandler) Create(c *fiber.Ctx) (err error) {
 		return fiber.NewError(fiber.StatusForbidden, "You can't send channel to another user's sensor")
 	}
 
-	_, err = h.repository.Create(ctx, tx, &bodyPayload)
+	_, err = h.repository.Create(ctx, h.db, &bodyPayload)
 	if err != nil {
 		return err
 	}

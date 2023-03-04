@@ -19,7 +19,7 @@ type UserRepository struct {
 	mailDialer *gomail.Dialer
 }
 
-func (u *UserRepository) Create(ctx context.Context, tx pgx.Tx, payload entities.UserCreate) (user entities.UserRead, err error) {
+func (u *UserRepository) Create(ctx context.Context, tx helper.Querier, payload entities.UserCreate) (user entities.UserRead, err error) {
 	hashedPassword, err := u.hashPassword(context.Background(), payload.Password)
 	if err != nil {
 		return user, err
@@ -54,7 +54,7 @@ func (u *UserRepository) Create(ctx context.Context, tx pgx.Tx, payload entities
 	return user, nil
 }
 
-func (u *UserRepository) GetAll(ctx context.Context, tx pgx.Tx) (users []entities.UserRead, err error) {
+func (u *UserRepository) GetAll(ctx context.Context, tx helper.Querier) (users []entities.UserRead, err error) {
 	users = []entities.UserRead{}
 	sqlStatement := `SELECT id_user, email, username,  status, token,  isadmin FROM user_person`
 	rows, err := tx.Query(ctx, sqlStatement)
@@ -84,7 +84,7 @@ func (u *UserRepository) GetAll(ctx context.Context, tx pgx.Tx) (users []entitie
 	return users, nil
 }
 
-func (u *UserRepository) GetById(ctx context.Context, tx pgx.Tx, id int) (user entities.UserRead, err error) {
+func (u *UserRepository) GetById(ctx context.Context, tx helper.Querier, id int) (user entities.UserRead, err error) {
 	sqlStatement := `SELECT id_user, email, username, status, token, isadmin FROM user_person WHERE id_user=$1`
 	err = tx.QueryRow(ctx, sqlStatement, id).Scan(
 		&user.IdUser,
@@ -103,7 +103,7 @@ func (u *UserRepository) GetById(ctx context.Context, tx pgx.Tx, id int) (user e
 	return user, nil
 }
 
-func (u *UserRepository) UpdatePassword(ctx context.Context, tx pgx.Tx, id int, password string) (err error) {
+func (u *UserRepository) UpdatePassword(ctx context.Context, tx helper.Querier, id int, password string) (err error) {
 	hashPassword, err := u.hashPassword(ctx, password)
 	if err != nil {
 		return err
@@ -124,7 +124,7 @@ func (u *UserRepository) UpdatePassword(ctx context.Context, tx pgx.Tx, id int, 
 	return nil
 }
 
-func (u *UserRepository) UpdateStatus(ctx context.Context, tx pgx.Tx, id int, status bool) (err error) {
+func (u *UserRepository) UpdateStatus(ctx context.Context, tx helper.Querier, id int, status bool) (err error) {
 	sqlStatement := `
 	UPDATE user_person 
 	set status=$1 
@@ -140,7 +140,7 @@ func (u *UserRepository) UpdateStatus(ctx context.Context, tx pgx.Tx, id int, st
 	return nil
 }
 
-func (u *UserRepository) Delete(ctx context.Context, tx pgx.Tx, id int) (err error) {
+func (u *UserRepository) Delete(ctx context.Context, tx helper.Querier, id int) (err error) {
 	sqlStatement := `DELETE FROM user_person WHERE id_user=$1`
 	res, err := tx.Exec(ctx, sqlStatement, id)
 	if err != nil {
@@ -153,7 +153,7 @@ func (u *UserRepository) Delete(ctx context.Context, tx pgx.Tx, id int) (err err
 	return nil
 }
 
-func (u *UserRepository) GetByEmail(ctx context.Context, tx pgx.Tx, email string) (user entities.UserRead, err error) {
+func (u *UserRepository) GetByEmail(ctx context.Context, tx helper.Querier, email string) (user entities.UserRead, err error) {
 	sqlStatement := `SELECT id_user, email, username,  status, token,  isAdmin FROM user_person WHERE email=$1`
 	err = tx.QueryRow(ctx, sqlStatement, email).Scan(
 		&user.IdUser,
@@ -172,7 +172,7 @@ func (u *UserRepository) GetByEmail(ctx context.Context, tx pgx.Tx, email string
 	return user, nil
 }
 
-func (u *UserRepository) GetByUsername(ctx context.Context, tx pgx.Tx, username string) (user entities.UserRead, err error) {
+func (u *UserRepository) GetByUsername(ctx context.Context, tx helper.Querier, username string) (user entities.UserRead, err error) {
 	sqlStatement := `SELECT id_user, email, username,  status, token,  isAdmin FROM user_person WHERE username=$1`
 	err = tx.QueryRow(ctx, sqlStatement, username).Scan(
 		&user.IdUser,
@@ -191,7 +191,7 @@ func (u *UserRepository) GetByUsername(ctx context.Context, tx pgx.Tx, username 
 	return user, nil
 }
 
-func (u *UserRepository) GetByToken(ctx context.Context, tx pgx.Tx, token string) (user entities.UserRead, err error) {
+func (u *UserRepository) GetByToken(ctx context.Context, tx helper.Querier, token string) (user entities.UserRead, err error) {
 	sqlStatement := `SELECT id_user, email, username,  status, token,  isAdmin FROM user_person WHERE token=$1`
 	err = tx.QueryRow(ctx, sqlStatement, token).Scan(
 		&user.IdUser,
@@ -210,7 +210,7 @@ func (u *UserRepository) GetByToken(ctx context.Context, tx pgx.Tx, token string
 	return user, nil
 }
 
-func (u *UserRepository) MatchPassword(ctx context.Context, tx pgx.Tx, user entities.UserRead, password string) (err error) {
+func (u *UserRepository) MatchPassword(ctx context.Context, tx helper.Querier, user entities.UserRead, password string) (err error) {
 	var userPassword string
 	sqlStatement := `SELECT password FROM user_person WHERE id_user=$1`
 	err = tx.QueryRow(ctx, sqlStatement, user.IdUser).Scan(

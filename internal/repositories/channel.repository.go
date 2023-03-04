@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/dafaath/iot-server/internal/entities"
-	"github.com/jackc/pgx/v5"
+	"github.com/dafaath/iot-server/internal/helper"
 )
 
 type ChannelRepository struct{}
@@ -14,7 +14,7 @@ func NewChannelRepository() (ChannelRepository, error) {
 	return ChannelRepository{}, nil
 }
 
-func (c *ChannelRepository) Create(ctx context.Context, tx pgx.Tx, payload *entities.ChannelCreate) (entities.Channel, error) {
+func (c *ChannelRepository) Create(ctx context.Context, tx helper.Querier, payload *entities.ChannelCreate) (entities.Channel, error) {
 	channel := entities.Channel{
 		Time:          time.Now(),
 		ChannelCreate: *payload,

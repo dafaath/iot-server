@@ -22,7 +22,7 @@ func init() {
 func GetConnection() (*pgxpool.Pool, error) {
 	config, err := pgxpool.ParseConfig(databaseUrl)
 	config.MinConns = 10
-	config.MaxConns = 75
+	config.MaxConns = 30
 	config.MaxConnLifetime = time.Hour
 	config.MaxConnIdleTime = time.Minute * 10
 	if err != nil {
