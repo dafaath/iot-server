@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"crypto/sha256"
+	"encoding/hex"
 	"io/ioutil"
 	"log"
 	"path/filepath"
@@ -26,8 +27,11 @@ const (
 )
 
 func hashPassword(ctx context.Context, password string) (hashedPassword string, err error) {
-	bytes := sha256.Sum256([]byte(password))
-	return string(bytes[:]), nil
+	hasher := sha256.New()
+	hasher.Write([]byte(password))
+	passwordHashBytes := hasher.Sum(nil)
+	passwordHashString := hex.EncodeToString(passwordHashBytes)
+	return passwordHashString, nil
 }
 
 func openSqlFile(sqlType SQLType) string {

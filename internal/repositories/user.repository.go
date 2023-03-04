@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 
 	"github.com/dafaath/iot-server/v2/configs"
@@ -193,8 +194,10 @@ func (u *UserRepository) MatchPassword(ctx context.Context, tx helper.Querier, u
 		return err
 	}
 
-	passwordHash := sha256.Sum256([]byte(password))
-	passwordHashString := string(passwordHash[:])
+	passwordHashString, err := u.hashPassword(ctx, password)
+	if err != nil {
+		return err
+	}
 
 	if userPassword != passwordHashString {
 		return fiber.NewError(401, "Wrong password")
@@ -204,8 +207,15 @@ func (u *UserRepository) MatchPassword(ctx context.Context, tx helper.Querier, u
 }
 
 func (u *UserRepository) hashPassword(ctx context.Context, password string) (hashedPassword string, err error) {
-	bytes := sha256.Sum256([]byte(password))
-	return string(bytes[:]), nil
+	hasher := sha256.New()
+	_, err = hasher.Write([]byte(password))
+	if err != nil {
+		return "", err
+	}
+
+	passwordHashBytes := hasher.Sum(nil)
+	passwordHashString := hex.EncodeToString(passwordHashBytes)
+	return passwordHashString, nil
 }
 
 func (u *UserRepository) SendEmail(ctx context.Context, to string, subject string, body string) (err error) {
