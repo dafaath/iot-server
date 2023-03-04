@@ -9,7 +9,6 @@ import (
 
 	"github.com/dafaath/iot-server/v2/internal/dependencies"
 	"github.com/dafaath/iot-server/v2/internal/entities"
-	"github.com/dafaath/iot-server/v2/internal/helper"
 	"github.com/dafaath/iot-server/v2/internal/repositories"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -200,19 +199,13 @@ func (h *NodeHandler) GetById(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
 	type NodeResponse struct {
 		node entities.Node
 		err  error
 	}
 	nodeResponseChannel := make(chan NodeResponse)
 	go func() {
-		node, err := h.repository.GetById(ctx, tx, id)
+		node, err := h.repository.GetById(ctx, h.db, id)
 		nodeResponseChannel <- NodeResponse{node, err}
 	}()
 
@@ -237,7 +230,7 @@ func (h *NodeHandler) GetById(c *fiber.Ctx) (err error) {
 		return fiber.NewError(400, "Limit must be integer")
 	}
 
-	feed, err := h.channelRepository.GetNodeChannel(ctx, tx, node.IdNode, limit)
+	feed, err := h.channelRepository.GetNodeChannel(ctx, h.db, node.IdNode, limit)
 	if err != nil {
 		return err
 	}
@@ -264,13 +257,7 @@ func (h *NodeHandler) UpdateForm(c *fiber.Ctx) (err error) {
 	}
 	ctx := context.Background()
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	node, err := h.repository.GetById(ctx, tx, id)
+	node, err := h.repository.GetById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
@@ -295,13 +282,7 @@ func (h *NodeHandler) Update(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	node, err := h.repository.GetById(ctx, tx, id)
+	node, err := h.repository.GetById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
@@ -315,7 +296,7 @@ func (h *NodeHandler) Update(c *fiber.Ctx) (err error) {
 		return fiber.NewError(403, "Can't edit another user's data")
 	}
 
-	err = h.repository.Update(ctx, tx, &node, bodyPayload)
+	err = h.repository.Update(ctx, h.db, &node, bodyPayload)
 	if err != nil {
 		return err
 	}
@@ -330,13 +311,7 @@ func (h *NodeHandler) Delete(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	node, err := h.repository.GetById(ctx, tx, id)
+	node, err := h.repository.GetById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
@@ -350,7 +325,7 @@ func (h *NodeHandler) Delete(c *fiber.Ctx) (err error) {
 		return fiber.NewError(403, "You can’t delete another user’s node")
 	}
 
-	err = h.repository.Delete(ctx, tx, id)
+	err = h.repository.Delete(ctx, h.db, id)
 	if err != nil {
 		return err
 	}

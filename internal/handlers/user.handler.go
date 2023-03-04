@@ -43,27 +43,21 @@ func (u *UserHandler) Register(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := u.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	_, err = u.repository.GetByUsername(ctx, tx, bodyPayload.Username)
+	_, err = u.repository.GetByUsername(ctx, u.db, bodyPayload.Username)
 	if err != nil && !helper.IsErrorNotFound(err) {
 		return err
 	} else if err == nil {
 		return fiber.NewError(fiber.StatusConflict, "Username already used")
 	}
 
-	_, err = u.repository.GetByEmail(ctx, tx, bodyPayload.Email)
+	_, err = u.repository.GetByEmail(ctx, u.db, bodyPayload.Email)
 	if err != nil && !helper.IsErrorNotFound(err) {
 		return err
 	} else if err == nil {
 		return fiber.NewError(fiber.StatusConflict, "Email already used")
 	}
 
-	user, err := u.repository.Create(ctx, tx, bodyPayload)
+	user, err := u.repository.Create(ctx, u.db, bodyPayload)
 	if err != nil {
 		return err
 	}
@@ -109,13 +103,7 @@ func (u *UserHandler) Login(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := u.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	user, err := u.repository.GetByUsername(ctx, tx, bodyPayload.Username)
+	user, err := u.repository.GetByUsername(ctx, u.db, bodyPayload.Username)
 	if err != nil {
 		return helper.ChangeErrorIfErrorIsNotFound(err, fiber.NewError(401, "Username or password is incorrect"))
 	}
@@ -124,7 +112,7 @@ func (u *UserHandler) Login(c *fiber.Ctx) (err error) {
 		return fiber.NewError(400, "Account is inactive, check email for activation")
 	}
 
-	err = u.repository.MatchPassword(ctx, tx, user, bodyPayload.Password)
+	err = u.repository.MatchPassword(ctx, u.db, user, bodyPayload.Password)
 	if err != nil {
 		return fiber.NewError(401, "Username or password is incorrect")
 	}
@@ -145,12 +133,6 @@ func (u *UserHandler) Activation(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := u.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
 	user, err := helper.ValidateUserToken(query.Token)
 	if err != nil {
 		return err
@@ -160,7 +142,7 @@ func (u *UserHandler) Activation(c *fiber.Ctx) (err error) {
 		return fiber.NewError(400, "Your account has already activated")
 	}
 
-	err = u.repository.UpdateStatus(ctx, tx, user.IdUser, true)
+	err = u.repository.UpdateStatus(ctx, u.db, user.IdUser, true)
 	if err != nil {
 		return err
 	}
@@ -182,13 +164,7 @@ func (u *UserHandler) ForgotPassword(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := u.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	user, err := u.repository.GetByUsername(ctx, tx, body.Username)
+	user, err := u.repository.GetByUsername(ctx, u.db, body.Username)
 	if err != nil {
 		return helper.ChangeErrorIfErrorIsNotFound(err, fiber.NewError(400, "Username or email is incorrect"))
 	}
@@ -203,7 +179,7 @@ func (u *UserHandler) ForgotPassword(c *fiber.Ctx) (err error) {
 	}
 
 	newPassword := helper.GenerateRandomString(8)
-	err = u.repository.UpdatePassword(ctx, tx, user.IdUser, newPassword)
+	err = u.repository.UpdatePassword(ctx, u.db, user.IdUser, newPassword)
 	if err != nil {
 		return err
 	}
@@ -218,13 +194,8 @@ func (u *UserHandler) ForgotPassword(c *fiber.Ctx) (err error) {
 
 func (u *UserHandler) GetAll(c *fiber.Ctx) (err error) {
 	ctx := context.Background()
-	tx, err := u.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
 
-	users, err := u.repository.GetAll(ctx, tx)
+	users, err := u.repository.GetAll(ctx, u.db)
 	if err != nil {
 		return err
 	}
@@ -239,13 +210,7 @@ func (u *UserHandler) GetOne(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := u.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	user, err := u.repository.GetById(ctx, tx, id)
+	user, err := u.repository.GetById(ctx, u.db, id)
 	if err != nil {
 		return err
 	}
@@ -266,23 +231,17 @@ func (u *UserHandler) Update(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := u.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	user, err := u.repository.GetById(ctx, tx, id)
+	user, err := u.repository.GetById(ctx, u.db, id)
 	if err != nil {
 		return err
 	}
 
-	err = u.repository.MatchPassword(ctx, tx, user, bodyPayload.OldPassword)
+	err = u.repository.MatchPassword(ctx, u.db, user, bodyPayload.OldPassword)
 	if err != nil {
 		return fiber.NewError(401, "Old password is incorrect")
 	}
 
-	err = u.repository.UpdatePassword(ctx, tx, id, bodyPayload.NewPassword)
+	err = u.repository.UpdatePassword(ctx, u.db, id, bodyPayload.NewPassword)
 	if err != nil {
 		return err
 	}
@@ -297,18 +256,12 @@ func (u *UserHandler) Delete(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := u.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	_, err = u.repository.GetById(ctx, tx, id)
+	_, err = u.repository.GetById(ctx, u.db, id)
 	if err != nil {
 		return err
 	}
 
-	err = u.repository.Delete(ctx, tx, id)
+	err = u.repository.Delete(ctx, u.db, id)
 	if err != nil {
 		return err
 	}

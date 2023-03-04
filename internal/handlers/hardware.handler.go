@@ -6,7 +6,6 @@ import (
 
 	"github.com/dafaath/iot-server/v2/internal/dependencies"
 	"github.com/dafaath/iot-server/v2/internal/entities"
-	"github.com/dafaath/iot-server/v2/internal/helper"
 	"github.com/dafaath/iot-server/v2/internal/repositories"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -43,13 +42,7 @@ func (h *HardwareHandler) Create(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	_, err = h.repository.Create(ctx, tx, bodyPayload)
+	_, err = h.repository.Create(ctx, h.db, bodyPayload)
 	if err != nil {
 		return err
 	}
@@ -59,13 +52,8 @@ func (h *HardwareHandler) Create(c *fiber.Ctx) (err error) {
 
 func (h *HardwareHandler) GetAll(c *fiber.Ctx) (err error) {
 	ctx := context.Background()
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
 
-	hardwares, err := h.repository.GetAllHardware(ctx, tx)
+	hardwares, err := h.repository.GetAllHardware(ctx, h.db)
 	if err != nil {
 		return err
 	}
@@ -89,13 +77,7 @@ func (h *HardwareHandler) GetById(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	hardware, err := h.repository.GetById(ctx, tx, id)
+	hardware, err := h.repository.GetById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
@@ -119,13 +101,7 @@ func (h *HardwareHandler) UpdateForm(c *fiber.Ctx) (err error) {
 	}
 	ctx := context.Background()
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	hardware, err := h.repository.GetById(ctx, tx, id)
+	hardware, err := h.repository.GetById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
@@ -150,18 +126,12 @@ func (h *HardwareHandler) Update(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	hardware, err := h.repository.GetById(ctx, tx, id)
+	hardware, err := h.repository.GetById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
 
-	err = h.repository.Update(ctx, tx, &hardware, bodyPayload)
+	err = h.repository.Update(ctx, h.db, &hardware, bodyPayload)
 	if err != nil {
 		return err
 	}
@@ -176,18 +146,12 @@ func (h *HardwareHandler) Delete(c *fiber.Ctx) (err error) {
 		return err
 	}
 
-	tx, err := h.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer helper.CommitOrRollback(ctx, tx, &err)
-
-	_, err = h.repository.GetById(ctx, tx, id)
+	_, err = h.repository.GetById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
 
-	err = h.repository.Delete(ctx, tx, id)
+	err = h.repository.Delete(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
