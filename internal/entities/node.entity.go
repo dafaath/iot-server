@@ -15,8 +15,8 @@ type NodeCreate struct {
 	Name             string   `json:"name" validate:"required"`
 	Location         string   `json:"location" validate:"required"`
 	IdHardwareNode   int      `json:"id_hardware_node" validate:"required"`
-	IdHardwareSensor []int    `json:"id_hardware_sensor" validate:"required"`
-	FieldSensor      []string `json:"field_sensor" validate:"required"`
+	IdHardwareSensor []int    `json:"id_hardware_sensor" validate:"required,max=10,min=1,dive,required"`
+	FieldSensor      []string `json:"field_sensor" validate:"required,max=10,min=1,dive,required"`
 	IsPublic         bool     `json:"is_public"`
 }
 

@@ -20,11 +20,30 @@ async function handleFormSubmit({
 
     //Get URL for api endpoint
     const formData = new FormData(form);
-    let data = Object.fromEntries(formData.entries());
-    console.log(data);
+    let data = {};
+    formData.forEach((value, key) => {
+      // Removing array in name
+      key = key.replace("[]", "");
+
+      // Reflect.has in favor of: object.hasOwnProperty(key)
+      if (!Reflect.has(data, key)) {
+        data[key] = value;
+        return;
+      }
+
+      if (!Array.isArray(data[key])) {
+        data[key] = [data[key]];
+      }
+
+      data[key].push(value);
+    });
+
+    console.log("Before alter", data);
     if (alterData) {
       data = alterData(data);
     }
+    console.log("After alter", data);
+
     // Show loading
     showLoading(true);
 

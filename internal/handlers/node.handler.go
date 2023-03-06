@@ -34,8 +34,21 @@ func NewNodeHandler(db *pgxpool.Pool, nodeRepository *repositories.NodeRepositor
 }
 
 func (h *NodeHandler) CreateForm(c *fiber.Ctx) (err error) {
+	ctx := context.Background()
+	nodeHardware, err := h.hardwareRepository.GetAllNode(ctx, h.db)
+	if err != nil {
+		return err
+	}
+
+	sensorHardware, err := h.hardwareRepository.GetAllSensor(ctx, h.db)
+	if err != nil {
+		return err
+	}
+
 	return c.Render("node_form", fiber.Map{
-		"title": "Create Node",
+		"title":          "Create Node",
+		"nodeHardware":   nodeHardware,
+		"sensorHardware": sensorHardware,
 	}, "layouts/main")
 }
 
@@ -293,15 +306,27 @@ func (h *NodeHandler) UpdateForm(c *fiber.Ctx) (err error) {
 	}
 	ctx := context.Background()
 
+	nodeHardware, err := h.hardwareRepository.GetAllNode(ctx, h.db)
+	if err != nil {
+		return err
+	}
+
+	sensorHardware, err := h.hardwareRepository.GetAllSensor(ctx, h.db)
+	if err != nil {
+		return err
+	}
+
 	node, err := h.repository.GetById(ctx, h.db, id)
 	if err != nil {
 		return err
 	}
 
 	return c.Render("node_form", fiber.Map{
-		"title": "Edit Node",
-		"node":  node,
-		"edit":  true,
+		"title":          "Edit Node",
+		"node":           node,
+		"nodeHardware":   nodeHardware,
+		"sensorHardware": sensorHardware,
+		"edit":           true,
 	}, "layouts/main")
 }
 
