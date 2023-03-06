@@ -7,22 +7,6 @@
       <a href="/node/create" class="d-flex justify-content-end">
         <button class="btn btn-primary"><i class="fa fa-plus me-2"></i>Add Node</button>
       </a>
-      <a href="/channel/create" class="d-flex justify-content-end">
-        <button class="btn btn-success"><i class="fa fa-plus me-2"></i>Add
-          Channel</button>
-      </a>
-    </div>
-  </div>
-  <div class="row mb-5 d-flex justify-content-start">
-    <div class="form-outline mb-4" style="max-width: 240px;">
-      <input
-        class="form-control form-control-sm"
-        type="number"
-        name="limit"
-        id="limit"
-        onchange="changeLimit()"
-      />
-      <label class="form-label" for="limit">Limit Feed</label>
     </div>
   </div>
   <div class="row">
@@ -34,9 +18,6 @@
           <th scope="col">Location</th>
           <th scope="col">Is Public</th>
           <th scope="col">Id Hardware Node</th>
-          <th scope="col">Id Hardware Sensor</th>
-          <th scope="col">Field Sensor</th>
-          <th scope="col">Feed</th>
           <th scope="col">Id User</th>
           <th scope="col">Action</th>
         </tr>
@@ -51,46 +32,6 @@
               <td>{{isPublic}}</td>
               <td>
                 {{idHardwareNode}}
-              </td>
-              <td>
-                <ol>
-                  {{#each idHardwareSensor as |id|}}
-                    {{#if id.valid}}
-                      <li>{{id.int64}}</li>
-                    {{else}}
-                      <li>null</li>
-                    {{/if}}
-                  {{/each}}
-                </ol>
-              </td>
-              <td>
-                <ol>
-                  {{#each fieldSensor as |field|}}
-                    {{#if field.valid}}
-                      <li>{{field.string}}</li>
-                    {{else}}
-                      <li>null</li>
-                    {{/if}}
-                  {{/each}}
-                </ol>
-              </td>
-              <td>
-                <ol>
-                  {{#each feed as |f|}}
-                    {{#with f}}
-                      <li> {{time}}</li>
-                      <ol>
-                        {{#each value as |v|}}
-                          {{#if v.valid}}
-                            <li>{{v.float64}}</li>
-                          {{else}}
-                            <li>null</li>
-                          {{/if}}
-                        {{/each}}
-                      </ol>
-                    {{/with}}
-                  {{/each}}
-                </ol>
               </td>
               <td>{{idUser}}</td>
               <td>
@@ -108,14 +49,6 @@
                     class="btn btn-success btn-lg btn-floating"
                   >
                     <i class="fas fa-edit"></i>
-                  </button>
-                </a>
-                <a href="/channel/create?id_node={{idNode}}">
-                  <button
-                    type="button"
-                    class="btn btn-info btn-lg btn-floating"
-                  >
-                    <i class="fas fa-plus"></i>
                   </button>
                 </a>
                 <button

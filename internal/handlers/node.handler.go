@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"sort"
 	"strconv"
@@ -72,32 +73,23 @@ func (h *NodeHandler) Create(c *fiber.Ctx) (err error) {
 		validateNodeHardwareChannel <- nil
 	}()
 
+	// Validate sensor hardware id same length with sensor field
+	if len(bodyPayload.IdHardwareSensor) != len(bodyPayload.FieldSensor) {
+		return fiber.NewError(400, "Sensor Hardware Id and Sensor Field must have same length")
+	}
+
 	// Make hardware validation for sensor async
-	withoutCurlyBrace := bodyPayload.IdHardwareSensor[1 : len(bodyPayload.IdHardwareSensor)-1]
-	idStringArray := strings.Split(withoutCurlyBrace, ",")
-	sensorHardwareIdLength := len(idStringArray)
+	sensorHardwareIdLength := len(bodyPayload.IdHardwareSensor)
 	validateSensorHardwareChannel := make(chan error, sensorHardwareIdLength)
-	for _, id := range idStringArray {
-		id = strings.TrimSpace(id)
-		go func(id string) {
-			if strings.ToLower(id) == "null" {
-				validateSensorHardwareChannel <- nil
-				return
-			}
-
-			idInt, err := strconv.Atoi(id)
-			if err != nil {
-				validateSensorHardwareChannel <- fiber.NewError(400, fmt.Sprintf("Sensor Hardware id must be integer, current id is '%s'", id))
-				return
-			}
-
-			hardwareType, err := h.hardwareRepository.GetHardwareTypeById(ctx, h.db, idInt)
+	for _, id := range bodyPayload.IdHardwareSensor {
+		go func(id int) {
+			hardwareType, err := h.hardwareRepository.GetHardwareTypeById(ctx, h.db, id)
 			if err != nil {
 				validateSensorHardwareChannel <- err
 				return
 			}
 			if hardwareType != "sensor" {
-				validateSensorHardwareChannel <- fiber.NewError(400, fmt.Sprintf("Sensor Hardware type for id %s not match, type should be sensor", id))
+				validateSensorHardwareChannel <- fiber.NewError(400, fmt.Sprintf("Sensor Hardware type for id %d not match, type should be sensor", id))
 				return
 			}
 
@@ -182,7 +174,7 @@ func (h *NodeHandler) GetAll(c *fiber.Ctx) (err error) {
 	switch accept {
 	case "text/html":
 		sort.Slice(nodesWithChannel, func(i, j int) bool {
-			return nodesWithChannel[i].Node.IdNode > nodesWithChannel[j].Node.IdNode
+			return nodesWithChannel[i].Node.Name < nodesWithChannel[j].Node.Name
 		})
 		return c.Render("node", fiber.Map{
 			"nodes": nodesWithChannel,
@@ -238,9 +230,53 @@ func (h *NodeHandler) GetById(c *fiber.Ctx) (err error) {
 	accept := c.Accepts("application/json", "text/html")
 	switch accept {
 	case "text/html":
+		sensor := []fiber.Map{}
+		for i := 0; i < len(node.IdHardwareSensor); i++ {
+			field := ""
+			if i < len(node.FieldSensor) {
+				field = node.FieldSensor[i]
+			}
+
+			sensor = append(sensor, fiber.Map{
+				"idHardware": node.IdHardwareSensor[i],
+				"field":      field,
+			})
+		}
+
+		sort.Slice(feed, func(i, j int) bool {
+			return feed[i].Time.Before(feed[j].Time)
+		})
+
+		mappedChannel := []fiber.Map{}
+		for i := 0; i < 10; i++ {
+			mappedChannel = append(mappedChannel, fiber.Map{
+				"name": fmt.Sprintf("Sensor %d", i+1),
+				"data": []interface{}{},
+			})
+		}
+
+		for _, channel := range feed {
+			// Convert time to epoch milliseconds
+			for i := 0; i < len(channel.Value); i++ {
+				value := channel.Value[i]
+				mappedChannel[i]["data"] = append(mappedChannel[i]["data"].([]interface{}), []interface{}{
+					channel.Time.UnixMilli(),
+					value,
+				})
+			}
+		}
+
+		channelJSONByte, err := json.Marshal(mappedChannel)
+		if err != nil {
+			return err
+		}
+
+		channelJSONString := string(channelJSONByte)
+
 		return c.Render("node_detail", fiber.Map{
-			"node": node,
-			"feed": feed,
+			"node":   node,
+			"sensor": sensor,
+			"feed":   channelJSONString,
 		}, "layouts/main")
 	default:
 		return c.Status(fiber.StatusOK).JSON(entities.NodeWithChannel{

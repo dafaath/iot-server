@@ -16,7 +16,7 @@ func NewChannelRepository() (ChannelRepository, error) {
 }
 
 func (c *ChannelRepository) Create(ctx context.Context, tx helper.Querier, payload *entities.ChannelCreate) error {
-	time := time.Now()
+	time := time.Now().UTC()
 	sqlStatement := `
 	INSERT INTO "channel" (
 		time, 
