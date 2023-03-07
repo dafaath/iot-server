@@ -321,12 +321,25 @@ func (h *NodeHandler) UpdateForm(c *fiber.Ctx) (err error) {
 		return err
 	}
 
+	idHardwareSensorString, err := json.Marshal(node.IdHardwareSensor)
+	if err != nil {
+		return err
+
+	}
+
+	fieldSensorString, err := json.Marshal(node.FieldSensor)
+	if err != nil {
+		return err
+	}
+
 	return c.Render("node_form", fiber.Map{
-		"title":          "Edit Node",
-		"node":           node,
-		"nodeHardware":   nodeHardware,
-		"sensorHardware": sensorHardware,
-		"edit":           true,
+		"title":                  "Edit Node",
+		"node":                   node,
+		"nodeHardware":           nodeHardware,
+		"sensorHardware":         sensorHardware,
+		"edit":                   true,
+		"idHardwareSensorString": string(idHardwareSensorString),
+		"fieldSensorString":      string(fieldSensorString),
 	}, "layouts/main")
 }
 

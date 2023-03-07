@@ -15,7 +15,7 @@ function generateID() {
   return result;
 }
 
-function addSensor() {
+function addSensor(idHardwareSensor = undefined, fieldSensor = undefined) {
   const random_id = generateID();
   const mainForm = $("#sensor-form-main");
   // Clone the main form
@@ -35,6 +35,14 @@ function addSensor() {
   clonned.find("#add-sensor").remove();
   clonned.find(".remove-sensor").show();
 
+  if (idHardwareSensor) {
+    clonned.find(".sensor-hardware-id").val(idHardwareSensor).change();
+  }
+
+  if (fieldSensor) {
+    clonned.find(".sensor-field").val(fieldSensor).change();
+  }
+
   // Add delete functionality to the new button
   clonned.find(".remove-sensor").click(function () {
     $("#" + random_id).remove();
@@ -52,11 +60,20 @@ const separated = window.location.href.split("/");
 const id = separated[separated.length - 2];
 let editOptions = {};
 if (isEdit) {
+  $("#id_hardware_node").val(ID_HARDWARE_NODE);
+
+  for (let index = 0; index < ID_HARDWARE_SENSOR.length; index++) {
+    const idHardwareSensor = ID_HARDWARE_SENSOR[index];
+    const fieldSensor = FIELD_SENSOR[index];
+    addSensor(idHardwareSensor, fieldSensor);
+  }
+
   editOptions = {
     url: `/node/${id}`,
     method: "PUT",
   };
 }
+
 handleFormSubmit({
   url: "/node/",
   ...editOptions,
@@ -74,7 +91,7 @@ handleFormSubmit({
     }
 
     data.id_hardware_node = parseInt(data.id_hardware_node);
-    
+
     data.id_hardware_sensor.forEach((idHardwareSensor, i) => {
       data.id_hardware_sensor[i] = parseInt(idHardwareSensor);
     });

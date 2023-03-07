@@ -104,7 +104,6 @@
                         type="text"
                         name="field_sensor[]"
                         class="form-control form-control-lg sensor-field"
-                        value="{{node.fieldSensor}}"
                       />
                     </div>
                   </div>
@@ -150,4 +149,11 @@
     </div>
   </div>
 </section>
+
+<script>
+  const ID_HARDWARE_NODE = "{{node.idHardwareNode}}"; const ID_HARDWARE_SENSOR =
+  JSON.parse($('<div>').html('{{idHardwareSensorString}}')[0].textContent);
+  const FIELD_SENSOR = JSON.parse($('<div>').html('{{fieldSensorString}}')[0].textContent);
+</script>
+
 <script src="/static/js/node-form.js"></script>
