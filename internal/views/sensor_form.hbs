@@ -45,31 +45,38 @@
                 </div>
 
                 <div class="form-outline mb-4">
-                  <input
+                  <select
                     type="number"
                     id="id_node"
                     name="id_node"
-                    class="form-control form-control-lg"
-                    value="{{sensor.idNode}}"
+                    class="form-select"
                     {{#if edit}}
-                        readonly
+                        disabled
                     {{/if}}
-                  />
-                  <label class="form-label" for="id_node">Id Node</label>
+                  >
+                    <option value="default" selected>Select Node</option>
+                    {{#each node}}
+                      <option value="{{this.idNode}}">{{this.idNode}} - {{this.name}}</option>
+                    {{/each}}
+                  </select>
                 </div>
 
                 <div class="form-outline mb-4">
-                  <input
+                  <select
                     type="number"
                     id="id_hardware"
                     name="id_hardware"
-                    class="form-control form-control-lg"
-                    value="{{sensor.idHardware}}"
+                    class="form-select"
+                    value="{{node.idHardware}}"
                     {{#if edit}}
-                        readonly
+                        disabled
                     {{/if}}
-                  />
-                  <label class="form-label" for="id_hardware">Id Hardware</label>
+                  >
+                    <option value="default" selected>Select Hardware</option>
+                    {{#each sensorHardware}}
+                      <option value="{{this.idHardware}}">{{this.idHardware}} - {{this.name}} - {{this.type}}</option>
+                    {{/each}}
+                  </select>
                 </div>
 
                 <div class="d-flex justify-content-center">
@@ -92,4 +99,9 @@
     </div>
   </div>
 </section>
+<script>
+  const HARDWARE_ID = "{{sensor.idHardware}}";
+  const NODE_ID = "{{sensor.idNode}}";
+  console.log(NODE_ID)
+</script>
 <script src="/static/js/sensor-form.js"></script>

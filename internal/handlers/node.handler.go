@@ -32,8 +32,16 @@ func NewNodeHandler(db *pgxpool.Pool, nodeRepository *repositories.NodeRepositor
 }
 
 func (h *NodeHandler) CreateForm(c *fiber.Ctx) (err error) {
+	ctx := context.Background()
+
+	nodeHardware, err := h.hardwareRepository.GetAllNode(ctx, h.db)
+	if err != nil {
+		return err
+	}
+
 	return c.Render("node_form", fiber.Map{
-		"title": "Create Node",
+		"title":        "Create Node",
+		"nodeHardware": nodeHardware,
 	}, "layouts/main")
 }
 
@@ -191,10 +199,16 @@ func (h *NodeHandler) UpdateForm(c *fiber.Ctx) (err error) {
 		return err
 	}
 
+	nodeHardware, err := h.hardwareRepository.GetAllNode(ctx, h.db)
+	if err != nil {
+		return err
+	}
+
 	return c.Render("node_form", fiber.Map{
-		"title": "Edit Node",
-		"node":  node,
-		"edit":  true,
+		"title":        "Edit Node",
+		"node":         node,
+		"edit":         true,
+		"nodeHardware": nodeHardware,
 	}, "layouts/main")
 }
 

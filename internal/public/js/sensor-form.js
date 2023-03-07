@@ -3,6 +3,8 @@ const separated = window.location.href.split("/");
 const id = separated[separated.length - 2];
 let editOptions = {};
 if (isEdit) {
+  $("#id_node").val(NODE_ID).change();
+  $("#id_hardware").val(HARDWARE_ID).change();
   editOptions = {
     url: `/sensor/${id}`,
     method: "PUT",

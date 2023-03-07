@@ -44,17 +44,21 @@
                 </div>
 
                 <div class="form-outline mb-4">
-                  <input
+                  <select
                     type="number"
                     id="id_hardware"
                     name="id_hardware"
-                    class="form-control form-control-lg"
+                    class="form-select"
                     value="{{node.idHardware}}"
                     {{#if edit}}
-                        readonly
+                        disabled
                     {{/if}}
-                  />
-                  <label class="form-label" for="id_hardware">Id Hardware</label>
+                  >
+                    <option value="default" selected>Select Hardware</option>
+                    {{#each nodeHardware}}
+                      <option value="{{this.idHardware}}">{{this.idHardware}} - {{this.name}} - {{this.type}}</option>
+                    {{/each}}
+                  </select>
                 </div>
 
                 <div class="d-flex justify-content-center">
@@ -77,4 +81,7 @@
     </div>
   </div>
 </section>
+<script>
+  const HARDWARE_ID = "{{node.idHardware}}";
+</script>
 <script src="/static/js/node-form.js"></script>
