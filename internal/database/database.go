@@ -21,8 +21,8 @@ func init() {
 // This function will make a connection to the database only once.
 func GetConnection() (*pgxpool.Pool, error) {
 	config, err := pgxpool.ParseConfig(databaseUrl)
-	config.MinConns = 5
-	config.MaxConns = 20
+	config.MinConns = 10
+	config.MaxConns = 50
 	config.MaxConnLifetime = time.Hour
 	config.MaxConnIdleTime = time.Minute * 10
 	if err != nil {
