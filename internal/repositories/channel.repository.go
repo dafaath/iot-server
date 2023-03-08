@@ -18,7 +18,7 @@ func NewChannelRepository() (ChannelRepository, error) {
 func (c *ChannelRepository) Create(ctx context.Context, tx helper.Querier, payload *entities.ChannelCreate) error {
 	time := time.Now().UTC()
 	sqlStatement := `
-	INSERT INTO "channel" (
+	INSERT INTO "feed" (
 		time, 
 		value, 
 		id_node)
@@ -33,7 +33,7 @@ func (c *ChannelRepository) Create(ctx context.Context, tx helper.Querier, paylo
 
 func (c *ChannelRepository) GetNodeChannel(ctx context.Context, tx helper.Querier, idNode int, limit int) ([]entities.Channel, error) {
 	channels := []entities.Channel{}
-	sqlStatement := `SELECT time, value, id_node FROM "channel" WHERE id_node=$1`
+	sqlStatement := `SELECT time, value, id_node FROM "feed" WHERE id_node=$1`
 	if limit >= 0 {
 		sqlStatement += " LIMIT " + strconv.Itoa(limit)
 	}
