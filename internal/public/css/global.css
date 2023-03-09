@@ -1,3 +1,7 @@
+body {
+  overflow: auto;
+}
+
 a.previous, a.next {
   text-decoration: none;
   text-align: start !important;

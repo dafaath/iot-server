@@ -55,7 +55,7 @@ func (hu *NodeUpdate) ChangeSettedFieldOnly(node *Node) {
 	}
 }
 
-type NodeWithChannel struct {
+type NodeWithFeed struct {
 	Node
 	Feed []Channel `json:"feed"`
 }

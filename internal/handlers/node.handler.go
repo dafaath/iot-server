@@ -154,33 +154,9 @@ func (h *NodeHandler) GetAll(c *fiber.Ctx) (err error) {
 		return fiber.NewError(400, "Limit must be integer")
 	}
 
-	type NodeWithChannelOutput struct {
-		NodeWithChannel entities.NodeWithChannel
-		Err             error
-	}
-	nodeWithChannelChannel := make(chan NodeWithChannelOutput, len(nodes))
-	for _, node := range nodes {
-		go func(node entities.Node) {
-			channel, err := h.channelRepository.GetNodeChannel(ctx, h.db, node.IdNode, limit)
-			nodeWithChannel := entities.NodeWithChannel{
-				Node: node,
-				Feed: channel,
-			}
-			nodeWithChannelChannel <- NodeWithChannelOutput{
-				NodeWithChannel: nodeWithChannel,
-				Err:             err,
-			}
-		}(node)
-	}
-
-	nodesWithChannel := make([]entities.NodeWithChannel, len(nodes))
-	for i := 0; i < len(nodes); i++ {
-		nodeWithChannel := <-nodeWithChannelChannel
-		if nodeWithChannel.Err != nil {
-			return nodeWithChannel.Err
-		}
-
-		nodesWithChannel[i] = nodeWithChannel.NodeWithChannel
+	nodesWithChannel, err := h.channelRepository.GetNodeChannelMultiple(ctx, h.db, nodes, limit)
+	if err != nil {
+		return err
 	}
 
 	accept := c.Accepts("application/json", "text/html")
@@ -292,7 +268,7 @@ func (h *NodeHandler) GetById(c *fiber.Ctx) (err error) {
 			"feed":   channelJSONString,
 		}, "layouts/main")
 	default:
-		return c.Status(fiber.StatusOK).JSON(entities.NodeWithChannel{
+		return c.Status(fiber.StatusOK).JSON(entities.NodeWithFeed{
 			Node: node,
 			Feed: feed,
 		})

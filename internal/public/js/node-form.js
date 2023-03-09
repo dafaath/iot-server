@@ -15,7 +15,10 @@ function generateID() {
   return result;
 }
 
-function addSensor(idHardwareSensor = undefined, fieldSensor = undefined) {
+function addSensor(
+  idHardwareSensorValue = undefined,
+  fieldSensorValue = undefined
+) {
   const random_id = generateID();
   const mainForm = $("#sensor-form-main");
   // Clone the main form
@@ -24,23 +27,27 @@ function addSensor(idHardwareSensor = undefined, fieldSensor = undefined) {
   // Set select for clonned object
   // Because clone does not copy the value of select, we need to do it manually
   // https://stackoverflow.com/questions/742810/clone-isnt-cloning-select-values
-  const selects = mainForm.find("select");
-  $(selects).each(function (i) {
-    const select = this;
-    $(clonned).find("select").eq(i).val($(select).val());
-  });
+  const sensorHardwareIdMain = mainForm.find(".sensor-hardware-id");
+  console.log(
+    "🚀 ~ file: node-form.js:28 ~ addSensor ~ selects:",
+    sensorHardwareIdMain
+  );
+  const sensorHardwareIdClonned = clonned.find(".sensor-hardware-id");
+  sensorHardwareIdClonned.val(sensorHardwareIdMain.val());
 
   clonned.attr("id", random_id);
   clonned.appendTo("#sensor-form-holder").show();
   clonned.find("#add-sensor").remove();
   clonned.find(".remove-sensor").show();
 
-  if (idHardwareSensor) {
-    clonned.find(".sensor-hardware-id").val(idHardwareSensor).change();
+  console.log("idHardwareSensor", idHardwareSensorValue);
+
+  if (idHardwareSensorValue != undefined) {
+    clonned.find(".sensor-hardware-id").val(idHardwareSensorValue).change();
   }
 
-  if (fieldSensor) {
-    clonned.find(".sensor-field").val(fieldSensor).change();
+  if (fieldSensorValue != undefined) {
+    clonned.find(".sensor-field").val(fieldSensorValue).change();
   }
 
   // Add delete functionality to the new button
@@ -53,7 +60,9 @@ function addSensor(idHardwareSensor = undefined, fieldSensor = undefined) {
   mainForm.find(".sensor-field").val("").change();
 }
 
-$("#add-sensor").click(addSensor);
+$("#add-sensor").click(() => {
+  addSensor();
+});
 
 const isEdit = window.location.href.includes("edit");
 const separated = window.location.href.split("/");
@@ -65,7 +74,18 @@ if (isEdit) {
   for (let index = 0; index < ID_HARDWARE_SENSOR.length; index++) {
     const idHardwareSensor = ID_HARDWARE_SENSOR[index];
     const fieldSensor = FIELD_SENSOR[index];
-    addSensor(idHardwareSensor, fieldSensor);
+
+    if (index != ID_HARDWARE_SENSOR.length - 1) {
+      addSensor(idHardwareSensor, fieldSensor);
+    } else {
+      console.log("idHardwareSensor", idHardwareSensor);
+      console.log(ID_HARDWARE_SENSOR);
+      $("#sensor-form-main")
+        .find(".sensor-hardware-id")
+        .val(idHardwareSensor)
+        .change();
+      $("#sensor-form-main").find(".sensor-field").val(fieldSensor).change();
+    }
   }
 
   editOptions = {
