@@ -60,7 +60,7 @@ func (u *NodeRepository) GetAll(ctx context.Context, tx helper.Querier, currentU
 		}
 		defer rows.Close()
 	} else {
-		sqlStatement = fmt.Sprintf(`SELECT %s FROM "node" WHERE id_user=$1`, u.nodeField())
+		sqlStatement = fmt.Sprintf(`SELECT %s FROM "node" WHERE id_user=$1 OR is_public=true`, u.nodeField())
 		rows, err = tx.Query(ctx, sqlStatement, currentUser.IdUser)
 		if err != nil {
 			return nodes, err

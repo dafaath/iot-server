@@ -77,10 +77,15 @@
   <div class="row">
     <h3>Feed</h3>
   </div>
-  <div class="row">
-    <div id="channel-chart">
-    </div>
-  </div>
+  {{#each sensor as |s|}}
+    {{#with s}}
+      <div class="row mb-5 mt-5">
+        <h5>Sensor {{field}}</h5>
+        <div id="channel-chart-{{@index}}">
+        </div>
+      </div>
+    {{/with}}
+  {{/each}}
 </div>
 
 <script>

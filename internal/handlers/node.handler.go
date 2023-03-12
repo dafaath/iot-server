@@ -236,20 +236,20 @@ func (h *NodeHandler) GetById(c *fiber.Ctx) (err error) {
 			return feed[i].Time.Before(feed[j].Time)
 		})
 
+		// Map sensor to json for chart
 		mappedChannel := []fiber.Map{}
-		for i := 0; i < 10; i++ {
+		for i := 0; i < len(sensor); i++ {
 			mappedChannel = append(mappedChannel, fiber.Map{
-				"name": fmt.Sprintf("Sensor %d", i+1),
+				"name": sensor[i]["field"],
 				"data": []interface{}{},
 			})
 		}
 
 		for _, channel := range feed {
-			// Convert time to epoch milliseconds
 			for i := 0; i < len(channel.Value); i++ {
 				value := channel.Value[i]
 				mappedChannel[i]["data"] = append(mappedChannel[i]["data"].([]interface{}), []interface{}{
-					channel.Time.UnixMilli(),
+					channel.Time.UnixMilli(), // Convert time to epoch milliseconds
 					value,
 				})
 			}
