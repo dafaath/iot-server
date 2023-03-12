@@ -14,6 +14,9 @@ var options = {
       autoScaleYaxis: true,
     },
   },
+  stroke: {
+    curve: "smooth",
+  },
   annotations: {
     yaxis: [
       {
@@ -60,15 +63,6 @@ var options = {
   tooltip: {
     x: {
       format: "dd MMM yyyy",
-    },
-  },
-  fill: {
-    type: "gradient",
-    gradient: {
-      shadeIntensity: 1,
-      opacityFrom: 0.7,
-      opacityTo: 0.9,
-      stops: [0, 100],
     },
   },
 };
