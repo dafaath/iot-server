@@ -14,12 +14,12 @@ import (
 	"github.com/dafaath/iot-server/internal/middlewares"
 	"github.com/dafaath/iot-server/internal/repositories"
 	"github.com/go-playground/validator/v10"
+	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cache"
 	"github.com/gofiber/fiber/v2/middleware/etag"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/template/handlebars"
-	// "github.com/goccy/go-json"
 )
 
 var createDatabaseMode bool
@@ -46,8 +46,8 @@ func main() {
 			// Override default error handler
 			Views:        engine,
 			ErrorHandler: helper.FiberErrorHandler,
-			// JSONEncoder:  json.Marshal,
-			// JSONDecoder:  json.Unmarshal,
+			JSONEncoder:  json.Marshal,
+			JSONDecoder:  json.Unmarshal,
 		},
 	)
 	app.Static("/static", "./internal/public")
