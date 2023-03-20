@@ -19,8 +19,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/etag"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/template/handlebars"
-
-	"github.com/goccy/go-json"
+	// "github.com/goccy/go-json"
 )
 
 var createDatabaseMode bool
@@ -47,8 +46,8 @@ func main() {
 			// Override default error handler
 			Views:        engine,
 			ErrorHandler: helper.FiberErrorHandler,
-			JSONEncoder:  json.Marshal,
-			JSONDecoder:  json.Unmarshal,
+			// JSONEncoder:  json.Marshal,
+			// JSONDecoder:  json.Unmarshal,
 		},
 	)
 	app.Static("/static", "./internal/public")

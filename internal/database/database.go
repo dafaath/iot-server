@@ -18,11 +18,11 @@ func init() {
 	databaseUrl = fmt.Sprintf("postgres://%s:%s@%s:%d/%s", databaseConfig.Username, databaseConfig.Password, databaseConfig.Host, databaseConfig.Port, databaseConfig.Name)
 }
 
-// This function will make a connection to the database only once.
+// This function will make a connection to the database
 func GetConnection() (*pgxpool.Pool, error) {
 	config, err := pgxpool.ParseConfig(databaseUrl)
-	config.MinConns = 10
-	config.MaxConns = 50
+	config.MinConns = 5
+	config.MaxConns = 10
 	config.MaxConnLifetime = time.Hour
 	config.MaxConnIdleTime = time.Minute * 10
 	if err != nil {

@@ -81,6 +81,5 @@ func (r *Router) CreateSensorRoute(handler *handlers.SensorHandler) {
 
 func (r *Router) CreateChannelRoute(handler *handlers.ChannelHandler) {
 	channelRouter := r.app.Group("/channel")
-	channelRouter.Get("/create", r.authMiddleware.ValidateUser, handler.CreateForm)
 	channelRouter.Post("/", r.authMiddleware.ValidateUser, handler.Create)
 }
