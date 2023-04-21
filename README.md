@@ -11,6 +11,9 @@ In this study, researchers will compare the REST API framework in the Golang pro
 1. Does Golang with the Fiber framework have good performance in making IoT servers?
 2. How does the performance of the Fiber framework compare to the Falcon and Sanic frameworks in making IoT servers?
 
+## Summary
+In this research, an IoT data server application has been successfully developed using the Fiber framework with the Postgresql database. The development was carried out using the waterfall method for three iterations. The application that has been created can meet the defined user needs and succeed in the defined functional test. This research also added user interface features to the application. Applications with the Fiber framework have better performance than applications with the Sanic framework in Alvin's research (2023) and applications with the Falcon framework in Hanin's research (2021). Fiber applications have an average TPS of 2252.4, while Falcon has an average TPS of 30.5 and Sanic has an average TPS of 1106.8. Based on these TPS figures, the Fiber application has a performance of 73 times faster than the Falcon application and 2 times faster than the Sanic application. In addition, the Fiber application also has lower memory usage than the Falcon and Sanic applications. Fiber application has a memory usage percentage of 7.79%, Falcon 38.98%, and Sanic 12.85%. Based on these results, the Fiber framework has better performance and optimization of memory usage when used as an IoT back-end server compared to the Falcon and Sanic frameworks.
+
 ## Version
 There are 2 version of this application
 ### Version 1
