@@ -34,17 +34,13 @@ func SignUserToken(user entities.UserRead) (string, error) {
 
 func ValidateUserToken(tokenString string) (user entities.UserRead, err error) {
 	config := configs.GetConfig()
-	// Parse takes the token string and a function for looking up the key. The latter is especially
-	// useful if you use multiple keys for your application.  The standard is to use 'kid' in the
-	// head of the token to identify which key to use, but the parsed token (head and claims) is provided
-	// to the callback, providing flexibility.
+	// Parse and validate the token. KeyFunc will be used to validate the token by returning the secret key.
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Don't forget to validate the alg is what you expect:
+		// Validate the algorithm used in the token is the same we used to sign it
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
-		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
 		return []byte(config.JWT.SecretKey), nil
 	})
 	if err != nil {
