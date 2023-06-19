@@ -15,8 +15,6 @@ import (
 	"github.com/dafaath/iot-server/internal/repositories"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cache"
-	"github.com/gofiber/fiber/v2/middleware/etag"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/template/handlebars"
 	// "github.com/goccy/go-json"
@@ -105,10 +103,6 @@ func main() {
 	router.CreateSensorRoute(&sensorHandler)
 	router.CreateChannelRoute(&channelHandler)
 	// END
-
-	// Middleware
-	app.Use(cache.New())
-	app.Use(etag.New())
 
 	// Initialize default config
 
