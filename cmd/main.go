@@ -16,8 +16,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cache"
-	"github.com/gofiber/fiber/v2/middleware/etag"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/gofiber/template/handlebars"
 )
@@ -102,10 +100,6 @@ func main() {
 	router.CreateNodeRoute(&nodeHandler)
 	router.CreateChannelRoute(&channelHandler)
 	// END
-
-	// Middleware
-	app.Use(cache.New())
-	app.Use(etag.New())
 
 	// Initialize default config
 

@@ -34,6 +34,7 @@ func IsErrorNotFound(err error) bool {
 }
 
 func ChangeErrorIfErrorIsNotFound(err error, newError error) error {
+	// If err is 404 then change it to newError, otherwise return err
 	var e *fiber.Error
 	if errors.As(err, &e) && e.Code == 404 {
 		return newError
