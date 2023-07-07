@@ -243,7 +243,7 @@ func (u *UserRepository) SendEmailActivation(ctx context.Context, user entities.
 		return err
 	}
 
-	urlCode := fmt.Sprintf("http://%s:%d/user/activation?token=%s", configs.Server.Host, configs.Server.Port, jwtToken)
+	urlCode := fmt.Sprintf("%s/user/activation?token=%s", configs.Server.Domain, jwtToken)
 	subject := "Registration Email"
 	body := fmt.Sprintf(`<html>              
 			<head>>

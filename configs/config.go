@@ -18,6 +18,7 @@ type Config struct {
 		Host string `json:"host"`
 		Port int    `json:"port"`
 		Env  string `json:"env"`
+		Domain  string `json:"domain"`
 	} `json:"server"`
 	Database struct {
 		Username string `json:"username"`
