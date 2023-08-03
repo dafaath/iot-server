@@ -20,8 +20,8 @@ type UserHandler struct {
 	validator  *dependencies.Validator
 }
 
-func NewUserHandler(db *pgxpool.Pool, userRepository *repositories.UserRepository, validator *dependencies.Validator) (UserHandler, error) {
-	return UserHandler{
+func NewUserHandler(db *pgxpool.Pool, userRepository *repositories.UserRepository, validator *dependencies.Validator) (*UserHandler, error) {
+	return &UserHandler{
 		db:         db,
 		validator:  validator,
 		repository: userRepository,

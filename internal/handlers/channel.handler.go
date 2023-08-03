@@ -17,8 +17,8 @@ type ChannelHandler struct {
 	validator      *dependencies.Validator
 }
 
-func NewChannelHandler(db *pgxpool.Pool, channelRepository *repositories.ChannelRepository, nodeRepository *repositories.NodeRepository, validator *dependencies.Validator) (ChannelHandler, error) {
-	return ChannelHandler{
+func NewChannelHandler(db *pgxpool.Pool, channelRepository *repositories.ChannelRepository, nodeRepository *repositories.NodeRepository, validator *dependencies.Validator) (*ChannelHandler, error) {
+	return &ChannelHandler{
 		db:             db,
 		repository:     channelRepository,
 		nodeRepository: nodeRepository,

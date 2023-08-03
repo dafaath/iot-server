@@ -16,8 +16,8 @@ type Validator struct {
 	Validate *validator.Validate
 }
 
-func NewValidator(validate *validator.Validate) Validator {
-	return Validator{Validate: validate}
+func NewValidator(validate *validator.Validate) *Validator {
+	return &Validator{Validate: validate}
 }
 
 func (v *Validator) formaFieldErrorMessage(fe validator.FieldError) string {

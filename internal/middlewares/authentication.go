@@ -11,8 +11,8 @@ type AuthenticationMiddleware struct {
 	validator *dependencies.Validator
 }
 
-func NewAuthenticationMiddleware(validator *dependencies.Validator) AuthenticationMiddleware {
-	return AuthenticationMiddleware{
+func NewAuthenticationMiddleware(validator *dependencies.Validator) *AuthenticationMiddleware {
+	return &AuthenticationMiddleware{
 		validator: validator,
 	}
 }

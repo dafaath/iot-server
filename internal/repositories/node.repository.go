@@ -12,8 +12,8 @@ import (
 
 type NodeRepository struct{}
 
-func NewNodeRepository() (NodeRepository, error) {
-	return NodeRepository{}, nil
+func NewNodeRepository() (*NodeRepository, error) {
+	return &NodeRepository{}, nil
 }
 
 func (u *NodeRepository) nodeFieldWithoutId() string {

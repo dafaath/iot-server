@@ -23,8 +23,8 @@ type NodeHandler struct {
 	validator          *dependencies.Validator
 }
 
-func NewNodeHandler(db *pgxpool.Pool, nodeRepository *repositories.NodeRepository, channelRepository *repositories.ChannelRepository, hardwareRepository *repositories.HardwareRepository, validator *dependencies.Validator) (NodeHandler, error) {
-	return NodeHandler{
+func NewNodeHandler(db *pgxpool.Pool, nodeRepository *repositories.NodeRepository, channelRepository *repositories.ChannelRepository, hardwareRepository *repositories.HardwareRepository, validator *dependencies.Validator) (*NodeHandler, error) {
+	return &NodeHandler{
 		db:                 db,
 		repository:         nodeRepository,
 		hardwareRepository: hardwareRepository,

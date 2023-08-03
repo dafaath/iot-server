@@ -296,8 +296,8 @@ func (u *UserRepository) SignJWT(ctx context.Context, user entities.UserRead) (t
 	return helper.SignUserToken(user)
 }
 
-func NewUserRepository(mailDialer *gomail.Dialer) (UserRepository, error) {
-	return UserRepository{
+func NewUserRepository(mailDialer *gomail.Dialer) (*UserRepository, error) {
+	return &UserRepository{
 		mailDialer: mailDialer,
 	}, nil
 }

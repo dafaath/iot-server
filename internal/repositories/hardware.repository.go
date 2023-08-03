@@ -12,8 +12,8 @@ import (
 
 type HardwareRepository struct{}
 
-func NewHardwareRepository() (HardwareRepository, error) {
-	return HardwareRepository{}, nil
+func NewHardwareRepository() (*HardwareRepository, error) {
+	return &HardwareRepository{}, nil
 }
 
 func (u *HardwareRepository) hardwareField() string {

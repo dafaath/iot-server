@@ -19,8 +19,8 @@ type HardwareHandler struct {
 	nodeRepository *repositories.NodeRepository
 }
 
-func NewHardwareHandler(db *pgxpool.Pool, hardwareRepository *repositories.HardwareRepository, nodeRepository *repositories.NodeRepository, validator *dependencies.Validator) (HardwareHandler, error) {
-	return HardwareHandler{
+func NewHardwareHandler(db *pgxpool.Pool, hardwareRepository *repositories.HardwareRepository, nodeRepository *repositories.NodeRepository, validator *dependencies.Validator) (*HardwareHandler, error) {
+	return &HardwareHandler{
 		db:             db,
 		validator:      validator,
 		repository:     hardwareRepository,

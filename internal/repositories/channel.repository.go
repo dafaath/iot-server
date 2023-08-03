@@ -11,8 +11,8 @@ import (
 
 type ChannelRepository struct{}
 
-func NewChannelRepository() (ChannelRepository, error) {
-	return ChannelRepository{}, nil
+func NewChannelRepository() (*ChannelRepository, error) {
+	return &ChannelRepository{}, nil
 }
 
 func (c *ChannelRepository) Create(ctx context.Context, tx helper.Querier, payload *entities.ChannelCreate) error {
